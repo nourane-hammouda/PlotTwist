@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="86.54mm" viewBox="0 0 1040 500" role="img" aria-labelledby="title desc">
+  <title id="title">Diagramme en araignée préparatoire de la part de l’IA par compétence</title>
+  <desc id="desc">Diagramme radar vierge présentant les cinq compétences de haut niveau à gauche et les cinq compétences de bas niveau à droite. Les valeurs de part IA et les plafonds restent à renseigner par l’équipe.</desc>
+  <style>
+    text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
+    .title { font-size: 23px; font-weight: 700; }
+    .section { font-size: 16px; font-weight: 700; letter-spacing: 1.3px; }
+    .label { font-size: 15px; font-weight: 600; }
+    .detail { font-size: 15px; fill: #555b70; }
+    .tick { font-size: 12px; fill: #73788a; }
+    .ring { fill: none; stroke: #dfe2ec; stroke-width: 1.5; }
+    .axis { stroke: #dfe2ec; stroke-width: 1.5; }
+    .split { stroke: #9b9daf; stroke-width: 2; stroke-dasharray: 5 6; }
+    .high { fill: #239d70; }
+    .low { fill: #6550d9; }
+  </style>
+
+  <text x="26" y="38" class="title">Part de l’IA par compétence</text>
+  <path d="M180 75 A170 170 0 0 0 180 415 Z" fill="#eaf6f0"/>
+  <path d="M180 75 A170 170 0 0 1 180 415 Z" fill="#f0eefc"/>
+  <text x="76" y="72" class="section high">HAUT NIVEAU</text>
+  <text x="222" y="72" class="section low">BAS NIVEAU</text>
+
+  <circle cx="180" cy="245" r="34" class="ring"/>
+  <circle cx="180" cy="245" r="68" class="ring"/>
+  <circle cx="180" cy="245" r="102" class="ring"/>
+  <circle cx="180" cy="245" r="136" class="ring"/>
+  <circle cx="180" cy="245" r="170" class="ring"/>
+
+  <line x1="180" y1="245" x2="80" y2="107" class="axis"/>
+  <line x1="180" y1="245" x2="280" y2="107" class="axis"/>
+  <line x1="180" y1="245" x2="342" y2="192" class="axis"/>
+  <line x1="180" y1="245" x2="350" y2="245" class="axis"/>
+  <line x1="180" y1="245" x2="342" y2="298" class="axis"/>
+  <line x1="180" y1="245" x2="280" y2="383" class="axis"/>
+  <line x1="180" y1="245" x2="80" y2="383" class="axis"/>
+  <line x1="180" y1="245" x2="18" y2="298" class="axis"/>
+  <line x1="180" y1="245" x2="10" y2="245" class="axis"/>
+  <line x1="180" y1="245" x2="18" y2="192" class="axis"/>
+  <line x1="180" y1="67" x2="180" y2="423" class="split"/>
+
+  <text x="171" y="107" class="tick">100</text>
+  <text x="171" y="141" class="tick">75</text>
+  <text x="171" y="175" class="tick">50</text>
+  <text x="171" y="209" class="tick">25</text>
+  <text x="40" y="97" text-anchor="middle" class="label">Idéation</text>
+  <text x="305" y="97" text-anchor="middle" class="label">Code</text>
+  <text x="367" y="184" class="label">Tests</text>
+  <text x="363" y="250" class="label">CI/CD</text>
+  <text x="358" y="315" class="label">Rédaction</text>
+  <text x="294" y="410" text-anchor="middle" class="label">Débogage</text>
+  <text x="69" y="410" text-anchor="middle" class="label">Validation</text>
+  <text x="8" y="326" class="label">Algorithmique</text>
+  <text x="6" y="250" class="label">Spécification</text>
+  <text x="16" y="176" class="label">Conception</text>
+
+  <rect x="565" y="105" width="430" height="276" rx="18" fill="#ffffff" stroke="#e3e5ec" stroke-width="2"/>
+  <circle cx="610" cy="158" r="8" fill="#6550d9"/>
+  <text x="632" y="164" class="detail">Part IA réelle à renseigner</text>
+  <line x1="600" y1="206" x2="620" y2="206" stroke="#239d70" stroke-width="4" stroke-dasharray="6 5"/>
+  <text x="632" y="212" class="detail">Plafond de l’équipe à fixer</text>
+  <text x="600" y="270" class="section">ÉTAT DU GRAPHIQUE</text>
+  <text x="600" y="304" class="detail">Les axes et l’échelle sont prêts.</text>
+  <text x="600" y="330" class="detail">Aucune valeur n’est tracée pour</text>
+  <text x="600" y="356" class="detail">ne pas présenter les chiffres</text>
+  <text x="600" y="382" class="detail">d’exemple comme ceux de l’équipe.</text>
+</svg>

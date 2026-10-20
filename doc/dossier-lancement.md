@@ -67,18 +67,9 @@ La v0.1.0 vise une boucle jouable minimale ; la v0.2.0 approfondit les contraint
 
 L’architecture suit le flux imposé **front → API REST → back Java → base de données**. Le front ne communique qu’avec l’API et n’accède jamais directement à la base.
 
-![Architecture envisagée de PlotTwist, du front à la base de données](diagrams/architecture.svg)
+![Architecture envisagée de PlotTwist, du front à la base de données](diagrams/architecture.svg){.architecture-diagram}
 
-```text
-Front web (framework à choisir)
-       │ HTTP / JSON
-API REST — Spring Boot / Spring MVC, OpenAPI
-       │ cas d’utilisation
-Back — Java 21, services et algorithmes indépendants du framework
-       │ Spring Data JPA / Hibernate
-Base — PostgreSQL, schéma versionné par Flyway
-```
-
+::: {.architecture-table}
 | Couche / besoin | Choix envisagé | Responsabilité |
 |---|---|---|
 | Front | Application web ; React, Vue.js ou Thymeleaf à décider | Partie, exploration, carnet d’indices, interrogatoire, accusation et résultat |
@@ -88,8 +79,11 @@ Base — PostgreSQL, schéma versionné par Flyway
 | Base de données | PostgreSQL, Spring Data JPA / Hibernate, Flyway | Persistance et évolution versionnée du schéma |
 | Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo | Tests unitaires et d’intégration, couverture et vérification continue |
 | Livraison | Docker Compose, GitHub Actions | Environnement reproductible et CI ; conteneurisation prévue en v0.2.0 |
+:::
 
 L’entité pivot pressentie est la **partie** (`GameSession`), qui relie l’enquête générée, la progression du joueur, les indices collectés et la résolution. Le modèle sera précisé avec les premières features. Les objets métier et algorithmes seront testables indépendamment de Spring ; migrations et API seront couvertes par des tests d’intégration.
+
+Le dépôt contient un **premier squelette de packages Java** sous `src/main/java/fr/miage/plottwist/`, organisé autour du domaine, des cas d’utilisation et des adaptateurs. Il sert à matérialiser les responsabilités envisagées, sans préjuger des choix détaillés qui seront validés lors des premières features. Aucun comportement métier ni backend exécutable n’est encore implémenté.
 
 # Démarche de réalisation d’une feature
 
@@ -116,11 +110,15 @@ L’IA est un **outil d’assistance, jamais l’autrice de la décision métier
 | Code et tests | Premier jet technique ou suggestions de cas | Relecture, exécution, adaptation et vérification des tests |
 | Documentation et CI | Reformulation ou aide à la configuration | Vérification des faits et compréhension des étapes |
 
-Il est interdit de commiter du code non compris, de transmettre des secrets ou des données personnelles à un assistant, ou de présenter un contenu généré comme entièrement humain. L’usage significatif de l’IA sera noté dans chaque pull request (outil, objectif, éléments repris, modifiés ou rejetés). La part de l’IA par compétence sera déclarée honnêtement à chaque livraison ; les valeurs et le graphe de suivi restent à renseigner et valider par l’équipe avant le dépôt final.
+Il est interdit de commiter du code non compris, de transmettre des secrets ou des données personnelles à un assistant, ou de présenter un contenu généré comme entièrement humain. L’usage significatif de l’IA sera noté dans chaque pull request (outil, objectif, éléments repris, modifiés ou rejetés). La part de l’IA par compétence sera déclarée honnêtement à chaque livraison ; les valeurs et les plafonds du graphique ci-dessous restent à renseigner et valider par l’équipe avant le dépôt final.
+
+![Diagramme en araignée préparatoire des dix compétences ; les valeurs seront ajoutées après validation par l’équipe](diagrams/part-ia.svg)
+
+Le graphique reprend les dix axes du modèle. Il est volontairement présenté sans courbe de valeurs : l’équipe devra renseigner les parts réelles et fixer ses plafonds avant la livraison, puis actualiser le tableau et le graphique ensemble.
 
 # Annexe — Part de l’IA par compétence {#annexe-part-ia}
 
-Les valeurs ci-dessous ne sont pas encore mesurées ni validées par l’équipe. Elles sont laissées à renseigner plutôt que déclarées à 0 %, puisque ce dossier a bénéficié d’une assistance IA. Les plafonds sont également à fixer collectivement. L’araignée demandée par le template sera générée à partir de ces valeurs avant le dépôt final, puis actualisée à chaque livraison.
+Les valeurs ci-dessous ne sont pas encore mesurées ni validées par l’équipe. Elles sont laissées à renseigner plutôt que déclarées à 0 %, puisque ce dossier a bénéficié d’une assistance IA. Les plafonds sont également à fixer collectivement.
 
 | Compétence | Niveau | Part IA (R1) | Plafond fixé par l’équipe |
 |---|---|---:|---:|

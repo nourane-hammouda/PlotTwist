@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="58.5mm" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
   <title id="title">Architecture envisagée de PlotTwist</title>
   <desc id="desc">Le front échange avec l’API REST, qui appelle les cas d’utilisation du back métier. Les adaptateurs de persistance relient le back à PostgreSQL. Le front ne contacte jamais la base directement.</desc>
   <defs>

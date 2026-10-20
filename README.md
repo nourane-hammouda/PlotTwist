@@ -60,6 +60,27 @@ Base de données (PostgreSQL)
 
 Les technologies et le détail du modèle métier restent à confirmer lors des premières features. La répartition nominative des axes fonctionnels n’a pas encore été décidée.
 
+Un **squelette initial de packages Java** est présent dans `src/main/java/fr/miage/plottwist/`. Il sépare le domaine, les cas d’utilisation et les adaptateurs techniques selon une organisation inspirée de l’architecture hexagonale. Les packages ne contiennent pas encore de fonctionnalités métier ; le projet ne dispose pas encore de `pom.xml` ni d’un backend exécutable.
+
+```text
+fr.miage.plottwist/
+├── api/                          points d’entrée techniques
+├── config/                       configuration transverse
+└── investigation/
+    ├── domain/                   modèles et règles métier
+    │   ├── model/
+    │   ├── algo/
+    │   └── exception/
+    ├── application/              cas d’utilisation et ports
+    │   ├── port/in/
+    │   ├── port/out/
+    │   └── service/
+    ├── adapter/
+    │   ├── in/web/               API REST
+    │   └── out/persistence/      persistance
+    └── config/                   assemblage du module
+```
+
 ## Scénario principal
 
 1. Le joueur démarre une nouvelle enquête.
@@ -79,7 +100,7 @@ Chaque itération prévoit une feature algorithmique par membre, développée de
 
 ## Démarrage et tests
 
-Le dépôt est actuellement en phase de lancement : il contient le README et le dossier de lancement, mais pas encore le code applicatif ni les scripts de démarrage et de tests. Les commandes de lancement seront ajoutées dès que le squelette de l’application sera intégré.
+Le dépôt est actuellement en phase de lancement : il contient le README, le dossier de lancement et un premier squelette de packages backend, mais pas encore d’implémentation applicative, de configuration Maven ni de scripts de démarrage et de tests. Les commandes de lancement seront ajoutées avec la mise en place du projet Java.
 
 ## Usage de l’intelligence artificielle
 

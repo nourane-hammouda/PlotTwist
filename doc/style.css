@@ -96,6 +96,22 @@ table {
   line-height: 1.25;
 }
 
+.architecture-table table {
+  margin: 1mm 0 2mm;
+  font-size: 6.8pt;
+  line-height: 1.15;
+}
+
+.architecture-table th,
+.architecture-table td {
+  padding: 0.7mm 1mm;
+}
+
+.architecture-diagram {
+  width: 85%;
+  margin: 1mm auto;
+}
+
 thead {
   display: table-header-group;
 }

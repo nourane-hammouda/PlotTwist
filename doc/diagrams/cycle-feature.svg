@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="45mm" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
   <title id="title">Cycle de réalisation d’une feature</title>
   <desc id="desc">Une feature passe par idéation, back, tests, API REST et front. Chaque étape est validée avant de poursuivre ; la feature est ensuite relue de bout en bout.</desc>
   <defs>

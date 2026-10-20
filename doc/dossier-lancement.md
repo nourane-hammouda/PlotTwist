@@ -38,18 +38,14 @@ Le parcours d’une partie articule les actions du joueur et les vérifications 
 
 # Scénarios d’usage
 
-1. **En tant que joueur**, je lance une nouvelle partie et choisis des paramètres simples, afin d’obtenir une enquête différente à chaque partie.
-2. **En tant que joueur**, j’explore les lieux et collecte des indices, afin de construire mes propres pistes.
-3. **En tant que joueur**, j’interroge un suspect sur son alibi, ses relations ou un indice, afin de confronter son témoignage aux faits et aux indices déjà découverts.
-4. **En tant que joueur**, je formule une accusation en désignant un coupable, un mobile et des preuves, afin d’obtenir un résultat expliqué.
-5. **En tant qu’enseignant ou démonstrateur**, je démarre une enquête jouable en soutenance, afin de vérifier qu’elle peut être résolue sans connaître sa solution à l’avance.
-6. **En tant que joueur**, je consulte mon carnet d’enquête, afin de retrouver les indices collectés et les informations importantes découvertes au cours de la partie.
-7. **En tant que joueur**, je consulte la chronologie des événements connus, afin de comparer les alibis et de repérer d’éventuelles incohérences.
-8. **En tant que joueur**, je consulte les relations entre les suspects, afin de mieux comprendre leurs liens et d’identifier des mobiles possibles.
-9. **En tant que joueur**, je demande une aide adaptée à ma progression lorsque je suis bloqué, afin de poursuivre l’enquête sans obtenir immédiatement sa solution.
-10. **En tant que joueur**, je consulte le bilan de l’enquête à la fin de la partie, afin de comprendre la solution et le rôle des principaux indices.
+1. **En tant que joueur**, je lance une nouvelle partie paramétrée, afin d’obtenir une enquête policière inédite, cohérente et résoluble générée sous contraintes.
+2. **En tant que joueur**, j’explore les lieux et consulte mon carnet d’enquête, afin de collecter des indices et de construire mes premières pistes.
+3. **En tant que joueur**, j’interroge un suspect sur son alibi, ses relations ou un indice, afin de confronter son témoignage aux faits déjà établis.
+4. **En tant que joueur**, je consulte la chronologie des événements et les trajets, afin de comparer les alibis et d’identifier des incohérences spatio-temporelles.
+5. **En tant que joueur**, je formule une accusation (coupable, mobile, preuves) et consulte le bilan, afin de vérifier ma déduction et de comprendre la solution.
+6. **En tant qu’enseignant ou démonstrateur**, je démarre une enquête jouable en soutenance, afin de vérifier en direct qu’elle est résoluble sans biais préalable.
 
-Ces scénarios décrivent les usages visés à terme ; ils ne signifient pas que toutes les fonctionnalités seront présentes dès la première version. La reprise d’une partie sauvegardée et le choix d’un niveau de difficulté pourront être étudiés ultérieurement, une fois le périmètre de la boucle de jeu initiale validé.
+Ces six scénarios couvrent la boucle complète de jeu visée. La reprise d’une partie sauvegardée et le réglage fin de difficulté pourront être étudiés ultérieurement, après validation de la boucle initiale.
 
 # Plan des features
 
@@ -63,27 +59,29 @@ Ces scénarios décrivent les usages visés à terme ; ils ne signifient pas que
 
 La v0.1.0 vise une boucle jouable minimale ; la v0.2.0 approfondit les contraintes et prévoit la conteneurisation ; la v1.0.0 vise la résolubilité, l’aide au joueur et la stabilisation. Le périmètre sera ajusté selon les résultats des itérations.
 
-# Architecture et frameworks envisagés
+# Architecture et séparation des responsabilités
 
 L’architecture suit le flux imposé **front → API REST → back Java → base de données**. Le front ne communique qu’avec l’API et n’accède jamais directement à la base.
 
-![Architecture envisagée de PlotTwist, du front à la base de données](diagrams/architecture.svg){.architecture-diagram}
+![Séparation des responsabilités et flux architectural de PlotTwist](diagrams/architecture.svg){.architecture-diagram}
 
 ::: {.architecture-table}
-| Couche / besoin | Choix envisagé | Responsabilité |
+| Couche / besoin | Choix retenu | Rôle et responsabilités |
 |---|---|---|
-| Front | Application web ; React, Vue.js ou Thymeleaf à décider | Partie, exploration, carnet d’indices, interrogatoire, accusation et résultat |
-| API REST | Spring Boot 3, Spring MVC, OpenAPI / Swagger | Endpoints versionnés sous `/api/v1`, validation et erreurs structurées |
-| Back | Java 21, Maven | Règles métier et algorithmes ; la logique reste hors des contrôleurs |
-| Graphes | JGraphT | Relations entre personnages, graphe spatial et calcul de trajets |
-| Base de données | PostgreSQL, Spring Data JPA / Hibernate, Flyway | Persistance et évolution versionnée du schéma |
-| Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo | Tests unitaires et d’intégration, couverture et vérification continue |
-| Livraison | Docker Compose, GitHub Actions | Environnement reproductible et CI ; conteneurisation prévue en v0.2.0 |
+| Front | Web (HTML/CSS/JS natif ou React/Vue) | Interface de jeu, exploration, carnet d’indices, interrogatoire et accusation |
+| API REST | Spring Boot 3, Spring MVC, OpenAPI / Swagger | Endpoints versionnés sous `/api/v1`, validation et erreurs structurées RFC 9457 |
+| Back Java | Java 21 (architecture hexagonale) | Règles métier, déductions et génération d’enquêtes sous contraintes hors contrôleurs |
+| Graphes | JGraphT | Relations entre personnages, graphe spatial des lieux et calcul de trajets |
+| Base de données | PostgreSQL, Spring Data JPA, Flyway | Persistance relationnelle et évolution versionnée du schéma (une migration par feature) |
+| Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo | Tests unitaires du domaine sans Spring, tests d’intégration persistance et API |
+| Livraison | Docker Compose, GitHub Actions | Environnement reproductible, CI continue et conteneurisation prévue en v0.2.0 |
 :::
 
-L’entité pivot pressentie est la **partie** (`GameSession`), qui relie l’enquête générée, la progression du joueur, les indices collectés et la résolution. Le modèle sera précisé avec les premières features. Les objets métier et algorithmes seront testables indépendamment de Spring ; migrations et API seront couvertes par des tests d’intégration.
+**Architecture hexagonale et packages.** Le dépôt s'appuie sur un premier squelette sous `src/main/java/fr/miage/plottwist/investigation/`. Le dossier `domain/` isole les modèles, règles et algorithmes sous contraintes en Java pur (sans dépendance Spring) ; `application/` orchestre les cas d'utilisation et ports ; `adapter/` implémente les contrôleurs REST (`adapter/in/web`) et la persistance JPA (`adapter/out/persistence`).
 
-Le dépôt contient un **premier squelette de packages Java** sous `src/main/java/fr/miage/plottwist/`, organisé autour du domaine, des cas d’utilisation et des adaptateurs. Il sert à matérialiser les responsabilités envisagées, sans préjuger des choix détaillés qui seront validés lors des premières features. Aucun comportement métier ni backend exécutable n’est encore implémenté.
+**Modèle commun et entité pivot.** L’entité pivot partagée est la **partie** (`GameSession`), qui relie l’enquête générée, la progression du joueur, les indices collectés et le verdict final. Ce noyau commun garantit la cohérence entre les features développées en parallèle.
+
+**Qualité du code.** Respect des principes SOLID, Clean Code (noms métier explicites, fonctions courtes), conventions REST (codes 201, 400, 404, erreurs RFC 9457), sécurité OWASP (validation `@Valid`, requêtes paramétrées) et *quality gate* continue.
 
 # Démarche de réalisation d’une feature
 
@@ -110,13 +108,13 @@ L’IA est un **outil d’assistance, jamais l’autrice de la décision métier
 | Code et tests | Premier jet technique ou suggestions de cas | Relecture, exécution, adaptation et vérification des tests |
 | Documentation et CI | Reformulation ou aide à la configuration | Vérification des faits et compréhension des étapes |
 
-Il est interdit de commiter du code non compris, de transmettre des secrets ou des données personnelles à un assistant, ou de présenter un contenu généré comme entièrement humain. L’usage significatif de l’IA sera noté dans chaque pull request (outil, objectif, éléments repris, modifiés ou rejetés). La part de l’IA par compétence sera déclarée honnêtement à chaque livraison ; les valeurs et les plafonds du graphique ci-dessous restent à renseigner et valider par l’équipe avant le dépôt final.
+**Interdits.** Commiter du code qu'on ne comprend pas ; confier des secrets ou des données personnelles à l'IA ; commiter sous une autre identité ; présenter comme humain un travail produit par l'IA.
 
-![Diagramme en araignée préparatoire des dix compétences ; les valeurs seront ajoutées après validation par l’équipe](diagrams/part-ia.svg)
-
-Le graphique reprend les dix axes du modèle. Il est volontairement présenté sans courbe de valeurs : l’équipe devra renseigner les parts réelles et fixer ses plafonds avant la livraison, puis actualiser le tableau et le graphique ensemble.
+**Traçabilité.** Chaque pull request comporte une section « Usage de l'IA » (outil, objectif, éléments repris, adaptés ou rejetés). La part de l'IA par compétence est déclarée dans le graphe en araignée demandé par le cours (annexe), comparée aux plafonds fixés par l'équipe.
 
 # Annexe — Part de l’IA par compétence {#annexe-part-ia}
+
+![Diagramme en araignée préparatoire des dix compétences ; les valeurs et plafonds seront actualisés par l’équipe](diagrams/part-ia.svg)
 
 Les valeurs ci-dessous ne sont pas encore mesurées ni validées par l’équipe. Elles sont laissées à renseigner plutôt que déclarées à 0 %, puisque ce dossier a bénéficié d’une assistance IA. Les plafonds sont également à fixer collectivement.
 

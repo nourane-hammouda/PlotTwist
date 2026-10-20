@@ -85,7 +85,7 @@ L’architecture suit le flux imposé **front → API REST → back Java → bas
 
 # Démarche de réalisation d’une feature
 
-Les étapes s’enchaînent dans cet ordre : **idéation → back → tests → API REST → front**. Une étape commence lorsque les critères de fin de la précédente sont satisfaits.
+Les étapes s’enchaînent dans cet ordre : **idéation → back → tests → API REST  → front**. Une étape commence lorsque les critères de fin de la précédente sont satisfaits.
 
 ![Cycle de réalisation d’une feature, avec validation à chaque étape](diagrams/cycle-feature.svg)
 

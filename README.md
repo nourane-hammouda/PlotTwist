@@ -36,29 +36,29 @@ Chaque membre contribue avec son propre compte développeur afin que les commits
 
 ## Architecture envisagée
 
-Le front communique avec le back uniquement au moyen de l’API REST.
+L’architecture suit le flux **front → API REST → back Java → base de données**. Le front communique avec le back uniquement au moyen de l’API REST.
 
 ```text
-Front web (framework à choisir)
-       │ HTTP / JSON
-API REST (Spring Boot / Spring MVC)
-       │
-Back métier (Java 21)
-       │ JPA
-Base de données (PostgreSQL)
+Front web
+    │ HTTP / JSON
+API REST — Spring Boot 3 / Spring MVC / OpenAPI
+    │ cas d’utilisation
+Back métier — Java 21, architecture hexagonale
+    │ adaptateur de persistance
+Base de données — PostgreSQL / Flyway
 ```
 
-| Couche / besoin | Technologie envisagée |
+| Couche / besoin | Choix envisagé |
 |---|---|
-| Front | Application web ; React, Vue.js ou Thymeleaf à choisir |
-| API REST et back | Java 21, Spring Boot 3, Spring MVC, Maven |
-| Persistance | PostgreSQL, Spring Data JPA / Hibernate, Flyway |
-| Algorithmes de graphes | JGraphT |
-| Tests | JUnit 5, Mockito, AssertJ, Testcontainers |
-| Qualité et livraison | JaCoCo, GitHub Actions |
-| Conteneurisation | Docker Compose, prévue pour la v0.2.0 |
+| Front | Web : HTML/CSS/JavaScript natif ou React/Vue, à décider |
+| API REST | Spring Boot 3, Spring MVC, OpenAPI / Swagger ; endpoints sous `/api/v1`, erreurs RFC 9457 |
+| Back | Java 21, organisé en architecture hexagonale |
+| Graphes | JGraphT pour les relations et les trajets |
+| Persistance | PostgreSQL, Spring Data JPA, Flyway ; une migration par feature |
+| Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo |
+| Livraison | GitHub Actions ; Docker Compose et conteneurisation prévues en v0.2.0 |
 
-Les technologies et le détail du modèle métier restent à confirmer lors des premières features. La répartition nominative des axes fonctionnels n’a pas encore été décidée.
+Les choix détaillés du front et du modèle métier restent à confirmer lors des premières features. La répartition nominative des axes fonctionnels n’a pas encore été décidée. La partie (`GameSession`) est envisagée comme entité pivot reliant l’enquête, la progression du joueur, les indices collectés et le verdict final.
 
 Un **squelette initial de packages Java** est présent dans `src/main/java/fr/miage/plottwist/`. Il sépare le domaine, les cas d’utilisation et les adaptateurs techniques selon une organisation inspirée de l’architecture hexagonale. Les packages ne contiennent pas encore de fonctionnalités métier ; le projet ne dispose pas encore de `pom.xml` ni d’un backend exécutable.
 
@@ -92,9 +92,9 @@ fr.miage.plottwist/
 
 | Version cible | Objectif |
 |---|---|
-| **v0.1.0** | Boucle jouable minimale : génération, chronologie, indices et accusation |
-| **v0.2.0** | Approfondissement des contraintes, déplacements et interrogatoires ; conteneurisation |
-| **v1.0.0** | Validation de la résolubilité, détection de contradictions, aide au joueur et stabilisation |
+| **v0.1.0** | Boucle jouable minimale : génération des personnages et relations, chronologie initiale, indices et accusation |
+| **v0.2.0** | Choix du coupable et du mobile, trajets, classement des suspects, interrogatoire structuré et conteneurisation |
+| **v1.0.0** | Validation globale de la résolubilité, détection d’incohérences, aide adaptative et bilan explicatif |
 
 Chaque itération prévoit une feature algorithmique par membre, développée de bout en bout. La démarche retenue est : **idéation → back → tests → API REST → front**. Les objectifs détaillés et les scénarios figurent dans le [dossier de lancement](doc/dossier-lancement.md).
 

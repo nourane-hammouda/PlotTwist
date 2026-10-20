@@ -2,147 +2,120 @@
 title: "PlotTwist"
 subtitle: "Dossier de lancement — Rendu R1"
 author: "Nourane Hammouda · Chaïma Mabrouki · Ornela Mothu · Zaineb BenMahmoud"
-date: "20 octobre 2026"
+date: 20 octobre 2026
+lang: fr
 ---
 
-**Formation :** Master 1 MIAGE · année universitaire 2026-2027  
-**Version du document :** 1.1 · **Version du projet :** phase de lancement  
-**Dépôt principal :** <https://github.com/nourane-hammouda/PlotTwist>
+**Formation :** Master 1 MIAGE Apprentissage · année universitaire 2026–2027  
+**Version du document :** 1.2 · **État du projet :** lancement  
+**Dépôt principal :** <https://github.com/nourane-hammouda/PlotTwist>  
+**Page de projet :** à publier ; URL à ajouter dès qu’elle sera disponible.
 
-# 1. Présentation de l’équipe
+# Équipe, comptes développeurs et dépôt
 
-PlotTwist est réalisé par une équipe de **quatre étudiantes** de Master 1 MIAGE. Aucun binôme ni étudiant isolé n’est laissé de côté.
+PlotTwist est porté par quatre étudiantes de M1 MIAGE. Les quatre membres sont réunies dans la même équipe ; aucun binôme ni étudiant isolé n’est laissé de côté.
 
-| Membre            | N° étudiant | Compte GitHub                                           | Adresse de commit            |
-| ----------------- | ----------- | ------------------------------------------------------- | ---------------------------- |
-| Nourane Hammouda  | 43017567  | [nourane-hammouda](https://github.com/nourane-hammouda) | `nouranehamouda09@gmail.com` |
-| Chaïma Mabrouki   | 43001959    | [Chaimambk](https://github.com/Chaimambk)               | `chaima.mbk21@gmail.com`     |
-| Ornela Mothu      | 43009011    | [ornelamt](https://github.com/ornelamt)                 | `ornelamothu4@gmail.com`     |
-| Zaineb BenMahmoud | 43014883    | [zainebbmn](https://github.com/zainebbmn)               | `zeyneb.b.mah04@gmail.com`   |
-
-Chaque membre utilisera **son propre compte développeur**. Les commits seront réalisés avec le nom et l’e-mail ci-dessus, afin que les contributions individuelles soient identifiables à l’évaluation et à la soutenance.
-
-Le dépôt principal est celui du **back Java**. Il accueillera le code métier, l’API REST, le dossier (`/doc`), la documentation et la CI. Le front sera développé **dans le même dépôt**, dans un module distinct. La répartition des axes fonctionnels n’est **pas encore arrêtée** : elle le sera avant le démarrage de la v0.1.0, à raison d’un axe par personne.
-
-# 2. Présentation générale du projet
-
-PlotTwist est une application de **génération et de résolution d’enquêtes interactives**.
-
-À partir de personnages, de lieux, de relations et d’événements, le système construit une enquête structurée : suspects, victime, coupable, mobile, chronologie, déplacements, témoignages, vrais indices et fausses pistes. Le joueur enquête (lieux, indices, interrogatoires) puis accuse (coupable, mobile, preuves).
-
-Ce n’est pas une bibliothèque d’histoires écrites à l’avance. Le cœur du produit est un **moteur qui génère, contrôle et fait évoluer une enquête cohérente** selon des contraintes logiques. Le proof of concept reste compact : 4 à 6 suspects, 4 à 6 lieux, 8 à 12 indices, une partie d’une quinzaine de minutes, des dialogues structurés (intentions prédéfinies, pas un chatbot libre).
-
-# 3. Caractère innovant
-
-L’innovation repose sur la **génération procédurale d’enquêtes résolubles**. Chaque partie peut produire une combinaison différente de personnages, relations, chronologies, indices et fausses pistes.
-
-Le moteur devra garantir notamment que le coupable a un mobile plausible et la possibilité matérielle d’agir ; que les déplacements sont compatibles avec la chronologie et le graphe des lieux ; qu’un personnage n’est pas simultanément dans deux lieux ; que plusieurs suspects restent plausibles en début de partie ; et que des indices décisifs permettent d’identifier le coupable sans rendre l’enquête triviale ni impossible.
-
-La dimension algorithmique porte sur la **génération sous contraintes**, les **graphes** (relations, lieux, plus courts chemins), la **cohérence temporelle**, la **détection de contradictions** et le **classement des suspects**. Ce n’est pas une surcouche CRUD : chaque feature majeure encapsule un algorithme nommé, testable, avec invariants et cas limites.
-
-# 4. Scénarios d’usage prévus
-
-**Utilisateurs visés.** Joueurs d’enquêtes courtes. Le professeur doit pouvoir lancer une partie en soutenance et tenter de la résoudre.
-
-**Scénario principal — générer, enquêter, accuser.**
-
-1. Le joueur démarre une partie (paramètres simples : nombre de suspects, difficulté, nombre de lieux).
-2. Le back génère l’enquête (personnages et relations, coupable et mobile, chronologie, indices et fausses pistes) puis vérifie cohérence et résolubilité.
-3. Le joueur explore les lieux, collecte des indices, interroge les suspects sur des thèmes structurés (alibi, relation avec la victime, présence dans un lieu, confrontation avec un indice).
-4. Il formule une accusation. L’application compare la proposition à la solution et produit un bilan.
-
-**Scénarios secondaires.** Aide adaptée à l’avancement (sans révéler immédiatement le coupable) ; détection d’une contradiction entre témoignage, chronologie et temps de déplacement ; relance d’une nouvelle enquête.
-
-# 5. Fonctionnalités envisagées et progression
-
-Le développement s’organise autour de **quatre axes**, qui seront attribués **un par membre** avant la v0.1.0. Chaque axe évolue sur trois itérations (une feature majeure par personne et par version). Cette trajectoire n’est pas un engagement à livrer douze modules de taille identique : le périmètre pourra être ajusté.
-
-| Axe | v0.1.0 | v0.2.0 | v1.0.0 |
-|---|---|---|---|
-| Génération de l’enquête | Personnages, relations et coupable | Sélection contrainte du coupable et du mobile | Validation globale et régénération |
-| Chronologie et déplacements | Emplois du temps cohérents | Graphe des lieux et calcul des déplacements | Détection d’incohérences spatio-temporelles |
-| Indices et déduction | Génération et placement des indices | Moteur de déduction (plausibilité) | Aide adaptative |
-| Interactions et résolution | Accusation et vérification | Interrogatoire structuré | Score et bilan explicatif |
-
-**v0.1.0 (24 novembre).** Boucle jouable minimale : génération, chronologie, indices, accusation, vérification. Une feature majeure de bout en bout par membre, README et badges, CI.
-
-**v0.2.0 (8 décembre).** Approfondissement logique (contraintes, déplacements, déduction, interrogatoires) et **conteneurisation**.
-
-**v1.0.0 (19 janvier).** Résolubilité, contradictions, aide, scoring, stabilisation des tests et de l’interface, soutenance.
-
-# 6. Architecture technique
-
-Architecture 3 tiers : **front → API REST → back → base de données**. Le front n’accède jamais directement à la BD.
-
-```
-Front (web, éventuellement CLI)
-        │  HTTP / JSON
-API REST Spring Boot (controllers, DTO, OpenAPI)
-        │  appels métier
-Back Java 21 (services + algorithmes purs, JGraphT)
-        │  JPA / Hibernate
-PostgreSQL (schéma versionné par Flyway)
-```
-
-**Front.** Création de partie, suspects, lieux, carnet d’indices, interrogatoires, accusation, bilan. Framework non figé (React, Vue.js ou Thymeleaf). Une CLI pourra servir de premier client. Le front n’intervient **qu’après** back testé et API exposée.
-
-**API REST.** Versionnée sous `/api/v1` : `/investigations`, `/characters`, `/locations`, `/clues`, `/interrogations`, `/hints`, `/accusations`, `/result`. OpenAPI / Swagger, codes HTTP corrects, erreurs structurées, validation Jakarta.
-
-**Back.** Java 21 et Spring Boot 3. La logique (génération, contraintes, chronologie, graphes, déplacements, indices, déduction, interrogatoire, accusation, score) vit dans des **classes Java pures**, indépendantes du framework. Les contrôleurs REST ne portent pas la logique. JGraphT servira aux graphes social et spatial (Dijkstra / A*).
-
-**Base de données.** PostgreSQL via Spring Data JPA / Hibernate. Entités pressenties : `Investigation`, `GameSession`, `Character`, `Relationship`, `Location`, `Connection`, `TimelineEvent`, `Motive`, `Clue`, `Interrogation`, `Testimony`, `Accusation`, `GameResult`. Migrations **Flyway** (une migration poussée n’est jamais réécrite). Mapping entités ↔ DTO par records Java et, si besoin, MapStruct.
-
-**Stack envisagée**
-
-| Besoin | Choix | Rôle |
+| Membre | Compte développeur GitHub | Adresse configurée pour les commits |
 |---|---|---|
-| Langage / build | Java 21, Maven | LTS, écosystème Spring |
-| Backend / API | Spring Boot 3, Spring Web | REST, DI, erreurs, validation |
-| Données | PostgreSQL, Spring Data JPA, Hibernate, Flyway | Persistance et schéma versionné |
-| Graphes | JGraphT | Relations, lieux, plus courts chemins |
-| Tests | JUnit 5, Mockito, AssertJ, Testcontainers | Unitaire et intégration PostgreSQL |
-| Qualité | JaCoCo, SpotBugs ou Error Prone | Couverture et défauts |
-| Livraison | Docker Compose, GitHub Actions | Conteneurs et CI/CD |
+| Nourane Hammouda | [@nourane-hammouda](https://github.com/nourane-hammouda) | `nouranehamouda09@gmail.com` |
+| Chaïma Mabrouki | [@Chaimambk](https://github.com/Chaimambk) | `chaima.mbk21@gmail.com` |
+| Ornela Mothu | [@ornelamt](https://github.com/ornelamt) | `ornelamothu4@gmail.com` |
+| Zaineb BenMahmoud | [@zainebbmn](https://github.com/zainebbmn) | `zeyneb.b.mah04@gmail.com` |
 
-Chaque feature : tests unitaires de l’algorithme (nominaux, limites, invariants). Tests d’intégration (persistance, API) avec Testcontainers. CI : compilation, tests, couverture, analyse à chaque push et pull request. Docker (back, PostgreSQL, front) pour la v0.2.0.
+Chaque membre configure Git avec le nom et l’adresse associés à son compte GitHub. Les commits et les pull requests permettent de suivre les contributions individuelles. Le dépôt principal héberge le back, l’API, le front et ce dossier dans `/doc` ; aucun dépôt front séparé n’est prévu à ce stade.
 
-**Git.** Une branche par feature, PR relue par un autre membre, `main` pour les versions taguées. Tags de pré-livraison en fin de séance (`v0.1.0-SNAPSHOT`, etc.).
+# Projet et caractère innovant
 
-# 7. Organisation des contributions
+PlotTwist est une application qui **génère des enquêtes policières interactives**, puis permet au joueur de les résoudre. Le système assemble personnages, relations, lieux, événements, mobiles, témoignages, indices et fausses pistes. Une enquête courte (environ quinze minutes) vise quatre à six suspects, quatre à six lieux et huit à douze indices.
 
-Les membres ne seront **pas** répartis par couche technique (une personne BD, une personne front). Chaque membre portera un **moteur métier de bout en bout**, une fois les axes attribués.
+Le projet ne se limite pas à afficher des récits préécrits ni à gérer des données. Son cœur est un moteur qui construit une enquête **cohérente et résoluble** sous contraintes : le coupable doit avoir un mobile et la possibilité d’agir ; les déplacements doivent respecter la chronologie et le graphe des lieux ; les témoignages et les indices ne doivent pas se contredire ; plusieurs pistes doivent rester plausibles avant l’enquête. Les dialogues seront structurés autour d’intentions prédéfinies, et non d’un chatbot libre.
 
-Démarche d’une feature : (1) idéation dans une issue (besoin, algorithme, complexité, schéma, critères d’acceptation) ; (2) back (migration, modèle, service, algorithme en classe Java pure) ; (3) tests unitaires a minima ; (4) API REST documentée ; (5) **front en dernier**.
+La dimension innovante et algorithmique porte sur la génération sous contraintes, les graphes de relations et de lieux, la cohérence spatio-temporelle, la détection de contradictions et le classement des suspects. Chaque feature majeure devra exposer un algorithme identifiable, testable et accompagné de ses invariants et cas limites.
 
-Suivi par commits, branches, pull requests, issues et tests. Chaque membre dépose individuellement chaque rendu dans l’espace devoir.
+# Scénarios d’usage
 
-# 8. Protocole d’utilisation de l’intelligence artificielle
+1. **En tant que joueur**, je lance une nouvelle partie et choisis des paramètres simples, afin d’obtenir une enquête différente à chaque partie.
+2. **En tant que joueur**, j’explore les lieux et collecte des indices, afin de construire mes propres pistes.
+3. **En tant que joueur**, j’interroge un suspect sur son alibi, ses relations ou un indice, afin de confronter son témoignage aux faits connus.
+4. **En tant que joueur**, je formule une accusation en désignant un coupable, un mobile et des preuves, afin d’obtenir un résultat expliqué.
+5. **En tant qu’enseignant ou démonstrateur**, je démarre une enquête jouable en soutenance, afin de vérifier qu’elle peut être résolue sans connaître sa solution à l’avance.
 
-L’IA générative est un **outil d’assistance**. Elle ne remplace ni la conception ni la compréhension. En soutenance, chacune doit pouvoir expliquer et refaire au tableau ses features.
+# Plan des features
 
-**Autorisé.** Pistes de conception, reformulation de documentation, explication d’erreur, structure de tests, données fictives, comparaison d’approches, relecture de code déjà compris.
+À chaque itération, **une feature algorithmique est portée par chaque membre**. Chaque feature est développée de bout en bout et touche la base de données, le back, l’API REST et le front ; elle n’est pas répartie par couche technique. Les axes ci-dessous constituent le découpage fonctionnel proposé. L’attribution nominative des features aux membres reste à valider collectivement avant la v0.1.0.
 
-**Interdit.** Intégrer du code non compris ; accepter une proposition sans vérification ; laisser l’IA décider de l’architecture ou de la cohérence d’une enquête ; livrer des sorties non testées ; transmettre secrets ou jetons.
+| Version cible | Génération de l’enquête | Chronologie et déplacements | Indices et déduction | Interactions et résolution |
+|---|---|---|---|---|
+| **v0.1.0 · 24/11** | Création des personnages et relations — génération de graphe | Chronologie initiale cohérente — contraintes temporelles | Génération et placement d’indices — sélection sous contraintes | Accusation et vérification — comparaison à la solution |
+| **v0.2.0 · 08/12** | Choix du coupable et du mobile — filtrage de contraintes | Graphe des lieux et trajets — plus courts chemins | Classement des suspects — score de plausibilité | Interrogatoire structuré — confrontation témoignage/indice |
+| **v1.0.0 · 19/01** | Validation globale et régénération — vérification d’invariants | Détection d’incohérences spatio-temporelles — contraintes croisées | Aide adaptative — sélection d’indice selon la progression | Score et bilan explicatif — évaluation de l’accusation |
 
-**Validation.** Relu, expliqué, adapté, testé, contrôlé, puis examiné en pull request. La cohérence de l’enquête reste **déterministe et testable**. Les usages significatifs sont tracés dans la PR (outil, objectif, repris / modifié / rejeté).
+La v0.1.0 vise une boucle jouable minimale ; la v0.2.0 approfondit les contraintes et prévoit la conteneurisation ; la v1.0.0 vise la résolubilité, l’aide au joueur et la stabilisation. Le périmètre sera ajusté selon les résultats des itérations.
 
-# 9. Dépôts du projet
+# Architecture et frameworks envisagés
 
-**Dépôt principal :** <https://github.com/nourane-hammouda/PlotTwist>
+L’architecture suit le flux imposé **front → API REST → back Java → base de données**. Le front ne communique qu’avec l’API et n’accède jamais directement à la base.
 
+```text
+Front web (framework à choisir)
+       │ HTTP / JSON
+API REST — Spring Boot / Spring MVC, OpenAPI
+       │ cas d’utilisation
+Back — Java 21, services et algorithmes indépendants du framework
+       │ Spring Data JPA / Hibernate
+Base — PostgreSQL, schéma versionné par Flyway
 ```
-/
-├── doc/          dossier-lancement.md / .pdf
-├── src/
-├── pom.xml
-├── README.md
-└── .github/workflows/
-```
 
-**Front :** intégré au dépôt principal. Pas de second dépôt à ce stade.
+| Couche / besoin | Choix envisagé | Responsabilité |
+|---|---|---|
+| Front | Application web ; React, Vue.js ou Thymeleaf à décider | Partie, exploration, carnet d’indices, interrogatoire, accusation et résultat |
+| API REST | Spring Boot 3, Spring MVC, OpenAPI / Swagger | Endpoints versionnés sous `/api/v1`, validation et erreurs structurées |
+| Back | Java 21, Maven | Règles métier et algorithmes ; la logique reste hors des contrôleurs |
+| Graphes | JGraphT | Relations entre personnages, graphe spatial et calcul de trajets |
+| Base de données | PostgreSQL, Spring Data JPA / Hibernate, Flyway | Persistance et évolution versionnée du schéma |
+| Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo | Tests unitaires et d’intégration, couverture et vérification continue |
+| Livraison | Docker Compose, GitHub Actions | Environnement reproductible et CI ; conteneurisation prévue en v0.2.0 |
 
-# 10. Conclusion et perspectives
+L’entité pivot pressentie est la **partie** (`GameSession`), qui relie l’enquête générée, la progression du joueur, les indices collectés et la résolution. Le modèle sera précisé avec les premières features. Les objets métier et algorithmes seront testables indépendamment de Spring ; migrations et API seront couvertes par des tests d’intégration.
 
-PlotTwist vise un proof of concept fondé sur une **logique métier algorithmique** : générer une enquête cohérente, vérifier les contraintes spatio-temporelles, raisonner à partir des indices, évaluer l’accusation.
+# Démarche de réalisation d’une feature
 
-Prochaines étapes : attribution des quatre axes ; invitation des collaboratrices au dépôt ; configuration Git des identités de commit ; squelette Spring Boot / Maven ; issues d’idéation de la v0.1.0. La démonstration de soutenance consistera à générer une enquête et à la jouer.
+Les étapes s’enchaînent dans cet ordre : **idéation → back → tests → API REST → front**. Une étape commence lorsque les critères de fin de la précédente sont satisfaits.
+
+| Étape | Travail attendu | Critère de fin |
+|---|---|---|
+| Idéation | Besoin, scénario, algorithme et complexité, alternatives, données/API impactées et critères d’acceptation ; issue et fiche dans `doc/features/` | Fiche relue et validée par un autre membre |
+| Back | Modèle métier, règles, algorithme, cas d’utilisation et persistance | Code compilé ; règles métier vérifiées |
+| Tests | Cas nominaux et limites, invariants, tests d’intégration | Chaque critère d’acceptation est couvert et les tests passent |
+| API REST | Endpoints `/api/v1`, DTO validés, erreurs structurées et documentation OpenAPI | API documentée et testée |
+| Front | Écrans consommant exclusivement l’API | Scénario jouable de bout en bout et pull request relue |
+
+# Protocole d’usage de l’intelligence artificielle
+
+L’IA est un **outil d’assistance, jamais l’autrice de la décision métier**. Elle peut aider à explorer des options, expliquer une erreur, suggérer des tests, relire ou reformuler la documentation. Elle ne décide pas de l’architecture ni de l’algorithme central de cohérence. Chaque membre doit comprendre, vérifier, adapter et pouvoir expliquer tout élément livré, notamment en soutenance.
+
+| Activité | Assistance possible de l’IA | Responsabilité humaine |
+|---|---|---|
+| Idéation et conception | Critique et comparaison de pistes | Choix, justification et rédaction de la spécification |
+| Algorithmes | Explication et signalement de cas oubliés | Conception, invariants et validation du cœur algorithmique |
+| Code et tests | Premier jet technique ou suggestions de cas | Relecture, exécution, adaptation et vérification des tests |
+| Documentation et CI | Reformulation ou aide à la configuration | Vérification des faits et compréhension des étapes |
+
+Il est interdit de commiter du code non compris, de transmettre des secrets ou des données personnelles à un assistant, ou de présenter un contenu généré comme entièrement humain. L’usage significatif de l’IA sera noté dans chaque pull request (outil, objectif, éléments repris, modifiés ou rejetés). La part de l’IA par compétence sera déclarée honnêtement à chaque livraison ; les valeurs et le graphe de suivi restent à renseigner et valider par l’équipe avant le dépôt final.
+
+# Annexe — Part de l’IA par compétence {#annexe-part-ia}
+
+Les valeurs ci-dessous ne sont pas encore mesurées ni validées par l’équipe. Elles sont laissées à renseigner plutôt que déclarées à 0 %, puisque ce dossier a bénéficié d’une assistance IA. Les plafonds sont également à fixer collectivement. L’araignée demandée par le template sera générée à partir de ces valeurs avant le dépôt final, puis actualisée à chaque livraison.
+
+| Compétence | Niveau | Part IA (R1) | Plafond fixé par l’équipe |
+|---|---|---:|---:|
+| Code | Bas | À confirmer | À fixer |
+| Tests | Bas | À confirmer | À fixer |
+| CI/CD | Bas | À confirmer | À fixer |
+| Rédaction | Bas | À confirmer | À fixer |
+| Débogage | Bas | À confirmer | À fixer |
+| Validation | Haut | À confirmer | À fixer |
+| Algorithmique | Haut | À confirmer | À fixer |
+| Spécification | Haut | À confirmer | À fixer |
+| Conception | Haut | À confirmer | À fixer |
+| Idéation | Haut | À confirmer | À fixer |

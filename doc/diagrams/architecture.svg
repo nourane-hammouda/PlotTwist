@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+  <title id="title">Architecture envisagée de PlotTwist</title>
+  <desc id="desc">Le front échange avec l’API REST, qui appelle les cas d’utilisation du back métier. Les adaptateurs de persistance relient le back à PostgreSQL. Le front ne contacte jamais la base directement.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#7565d8"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#299c70"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
+    .title { font-size: 24px; font-weight: 700; }
+    .label { font-size: 21px; font-weight: 700; }
+    .detail { font-size: 16px; fill: #555b70; }
+    .front { fill: #f0eefc; stroke: #b8aff0; stroke-width: 2; }
+    .api { fill: #eeefff; stroke: #9790dc; stroke-width: 2; }
+    .back { fill: #e9f6f0; stroke: #83c7a7; stroke-width: 2; }
+    .db { fill: #f8f3e7; stroke: #e5c878; stroke-width: 2; }
+    .arrow { stroke: #7565d8; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .db-arrow { stroke: #299c70; stroke-width: 3; fill: none; marker-end: url(#arrow-green); }
+  </style>
+  <text x="32" y="40" class="title">Séparation des responsabilités</text>
+  <rect x="28" y="105" width="235" height="156" rx="16" class="front"/>
+  <text x="145" y="150" text-anchor="middle" class="label">Front web</text>
+  <text x="145" y="183" text-anchor="middle" class="detail">Interface de jeu</text>
+  <text x="145" y="207" text-anchor="middle" class="detail">Parle uniquement à l’API</text>
+  <path d="M267 183H333" class="arrow"/>
+  <text x="300" y="164" text-anchor="middle" class="detail">HTTP / JSON</text>
+  <rect x="343" y="105" width="235" height="156" rx="16" class="api"/>
+  <text x="460" y="150" text-anchor="middle" class="label">API REST</text>
+  <text x="460" y="183" text-anchor="middle" class="detail">Contrôleurs, DTO</text>
+  <text x="460" y="207" text-anchor="middle" class="detail">Validation, OpenAPI</text>
+  <path d="M582 183H648" class="arrow"/>
+  <text x="615" y="164" text-anchor="middle" class="detail">Cas d’usage</text>
+  <rect x="658" y="105" width="260" height="156" rx="16" class="back"/>
+  <text x="788" y="150" text-anchor="middle" class="label">Back métier</text>
+  <text x="788" y="183" text-anchor="middle" class="detail">Règles, génération,</text>
+  <text x="788" y="207" text-anchor="middle" class="detail">cohérence et déduction</text>
+  <path d="M922 183H988" class="db-arrow"/>
+  <text x="955" y="164" text-anchor="middle" class="detail">Persistance</text>
+  <rect x="998" y="105" width="174" height="156" rx="16" class="db"/>
+  <text x="1085" y="150" text-anchor="middle" class="label">Base de données</text>
+  <text x="1085" y="183" text-anchor="middle" class="detail">PostgreSQL</text>
+  <text x="1085" y="207" text-anchor="middle" class="detail">Migrations Flyway</text>
+  <path d="M145 292V325H1085V292" stroke="#d07e70" stroke-width="2" stroke-dasharray="7 7" fill="none"/>
+  <path d="M611 325V298" stroke="#d07e70" stroke-width="2" stroke-dasharray="7 7" fill="none"/>
+  <rect x="419" y="288" width="384" height="50" rx="12" fill="#fff7f5" stroke="#e3aaa0"/>
+  <text x="611" y="319" text-anchor="middle" class="detail">Pas d’accès direct du front à la base</text>
+  <text x="600" y="372" text-anchor="middle" class="detail">Technologies envisagées : framework front à choisir · Spring Boot / Java 21 · PostgreSQL</text>
+</svg>

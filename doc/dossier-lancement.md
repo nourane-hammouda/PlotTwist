@@ -32,6 +32,10 @@ Le projet ne se limite pas à afficher des récits préécrits ni à gérer des 
 
 La dimension innovante et algorithmique porte sur la génération sous contraintes, les graphes de relations et de lieux, la cohérence spatio-temporelle, la détection de contradictions et le classement des suspects. Chaque feature majeure devra exposer un algorithme identifiable, testable et accompagné de ses invariants et cas limites.
 
+Le parcours d’une partie articule les actions du joueur et les vérifications réalisées par le moteur :
+
+![Parcours d’une enquête PlotTwist, de la génération à la résolution expliquée](diagrams/parcours-enquete.svg)
+
 # Scénarios d’usage
 
 1. **En tant que joueur**, je lance une nouvelle partie et choisis des paramètres simples, afin d’obtenir une enquête différente à chaque partie.
@@ -63,6 +67,8 @@ La v0.1.0 vise une boucle jouable minimale ; la v0.2.0 approfondit les contraint
 
 L’architecture suit le flux imposé **front → API REST → back Java → base de données**. Le front ne communique qu’avec l’API et n’accède jamais directement à la base.
 
+![Architecture envisagée de PlotTwist, du front à la base de données](diagrams/architecture.svg)
+
 ```text
 Front web (framework à choisir)
        │ HTTP / JSON
@@ -88,6 +94,8 @@ L’entité pivot pressentie est la **partie** (`GameSession`), qui relie l’en
 # Démarche de réalisation d’une feature
 
 Les étapes s’enchaînent dans cet ordre : **idéation → back → tests → API REST → front**. Une étape commence lorsque les critères de fin de la précédente sont satisfaits.
+
+![Cycle de réalisation d’une feature, avec validation à chaque étape](diagrams/cycle-feature.svg)
 
 | Étape | Travail attendu | Critère de fin |
 |---|---|---|

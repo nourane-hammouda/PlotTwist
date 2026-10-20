@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">Cycle de réalisation d’une feature</title>
+  <desc id="desc">Une feature passe par idéation, back, tests, API REST et front. Chaque étape est validée avant de poursuivre ; la feature est ensuite relue de bout en bout.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#7565d8"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
+    .title { font-size: 24px; font-weight: 700; }
+    .label { font-size: 20px; font-weight: 700; }
+    .detail { font-size: 15px; fill: #555b70; }
+    .step { fill: #f0eefc; stroke: #b8aff0; stroke-width: 2; }
+    .test { fill: #e9f6f0; stroke: #83c7a7; stroke-width: 2; }
+    .arrow { stroke: #7565d8; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <text x="32" y="38" class="title">Une feature est développée de bout en bout</text>
+  <rect x="24" y="86" width="195" height="120" rx="16" class="step"/>
+  <text x="121" y="129" text-anchor="middle" class="label">1 · Idéation</text>
+  <text x="121" y="161" text-anchor="middle" class="detail">Besoin, scénario,</text>
+  <text x="121" y="183" text-anchor="middle" class="detail">algorithme, critères</text>
+  <path d="M223 146H258" class="arrow"/>
+  <rect x="268" y="86" width="195" height="120" rx="16" class="step"/>
+  <text x="365" y="129" text-anchor="middle" class="label">2 · Back</text>
+  <text x="365" y="161" text-anchor="middle" class="detail">Modèle métier, règles</text>
+  <text x="365" y="183" text-anchor="middle" class="detail">et cas d’utilisation</text>
+  <path d="M467 146H502" class="arrow"/>
+  <rect x="512" y="86" width="195" height="120" rx="16" class="test"/>
+  <text x="609" y="129" text-anchor="middle" class="label">3 · Tests</text>
+  <text x="609" y="161" text-anchor="middle" class="detail">Cas nominaux, limites</text>
+  <text x="609" y="183" text-anchor="middle" class="detail">et invariants</text>
+  <path d="M711 146H746" class="arrow"/>
+  <rect x="756" y="86" width="195" height="120" rx="16" class="step"/>
+  <text x="853" y="129" text-anchor="middle" class="label">4 · API REST</text>
+  <text x="853" y="161" text-anchor="middle" class="detail">Endpoints, validation</text>
+  <text x="853" y="183" text-anchor="middle" class="detail">et documentation</text>
+  <path d="M955 146H990" class="arrow"/>
+  <rect x="1000" y="86" width="176" height="120" rx="16" class="step"/>
+  <text x="1088" y="129" text-anchor="middle" class="label">5 · Front</text>
+  <text x="1088" y="161" text-anchor="middle" class="detail">Écran et scénario</text>
+  <text x="1088" y="183" text-anchor="middle" class="detail">jouable de bout en bout</text>
+  <path d="M121 217V244H1088V217" stroke="#299c70" stroke-width="2" stroke-dasharray="7 7" fill="none"/>
+  <text x="604" y="275" text-anchor="middle" class="detail">Critères validés à chaque étape · relecture de la feature complète avant livraison</text>
+</svg>

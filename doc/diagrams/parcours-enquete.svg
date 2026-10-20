@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">Parcours d’une enquête PlotTwist</title>
+  <desc id="desc">Le joueur lance une partie, le moteur génère et vérifie l’enquête, le joueur enquête puis accuse, et le jeu explique la résolution.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#7565d8"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
+    .title { font-size: 24px; font-weight: 700; }
+    .label { font-size: 19px; font-weight: 700; }
+    .detail { font-size: 15px; fill: #555b70; }
+    .step { fill: #f0eefc; stroke: #b8aff0; stroke-width: 2; }
+    .engine { fill: #e9f6f0; stroke: #83c7a7; stroke-width: 2; }
+    .result { fill: #f8f3e7; stroke: #e5c878; stroke-width: 2; }
+    .arrow { stroke: #7565d8; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <text x="32" y="38" class="title">Une partie, de la génération à la résolution</text>
+  <rect x="24" y="83" width="190" height="145" rx="16" class="step"/>
+  <text x="119" y="126" text-anchor="middle" class="label">1 · Démarrer</text>
+  <text x="119" y="158" text-anchor="middle" class="detail">Choisir les paramètres</text>
+  <text x="119" y="181" text-anchor="middle" class="detail">et lancer une partie</text>
+  <path d="M218 155H258" class="arrow"/>
+  <rect x="268" y="83" width="215" height="145" rx="16" class="engine"/>
+  <text x="375" y="122" text-anchor="middle" class="label">2 · Générer</text>
+  <text x="375" y="153" text-anchor="middle" class="detail">Personnages, mobile,</text>
+  <text x="375" y="176" text-anchor="middle" class="detail">chronologie et indices</text>
+  <text x="375" y="205" text-anchor="middle" class="detail">sous contraintes</text>
+  <path d="M487 155H527" class="arrow"/>
+  <rect x="537" y="83" width="215" height="145" rx="16" class="step"/>
+  <text x="644" y="122" text-anchor="middle" class="label">3 · Enquêter</text>
+  <text x="644" y="153" text-anchor="middle" class="detail">Explorer les lieux,</text>
+  <text x="644" y="176" text-anchor="middle" class="detail">collecter des indices</text>
+  <text x="644" y="205" text-anchor="middle" class="detail">et interroger</text>
+  <path d="M756 155H796" class="arrow"/>
+  <rect x="806" y="83" width="170" height="145" rx="16" class="step"/>
+  <text x="891" y="126" text-anchor="middle" class="label">4 · Accuser</text>
+  <text x="891" y="158" text-anchor="middle" class="detail">Proposer un coupable,</text>
+  <text x="891" y="181" text-anchor="middle" class="detail">un mobile et des preuves</text>
+  <path d="M980 155H1020" class="arrow"/>
+  <rect x="1030" y="83" width="146" height="145" rx="16" class="result"/>
+  <text x="1103" y="122" text-anchor="middle" class="label">5 · Comprendre</text>
+  <text x="1103" y="153" text-anchor="middle" class="detail">Résultat et</text>
+  <text x="1103" y="176" text-anchor="middle" class="detail">explication finale</text>
+</svg>

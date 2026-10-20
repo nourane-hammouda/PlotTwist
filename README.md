@@ -9,7 +9,7 @@ Projet de **Master 1 MIAGE Apprentissage**. Le dépôt principal est [nourane-ha
 - [Dossier de lancement — source Markdown](doc/dossier-lancement.md)
 - [Dossier de lancement — PDF](doc/dossier-lancement.pdf)
 
-Le dossier évoluera avec les livraisons du projet. Pour le recompiler après modification :
+Le dossier évoluera avec les livraisons du projet. Pour le recompiler après modification  :
 
 ```bash
 make -C doc dossier

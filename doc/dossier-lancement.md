@@ -36,9 +36,16 @@ La dimension innovante et algorithmique porte sur la génération sous contraint
 
 1. **En tant que joueur**, je lance une nouvelle partie et choisis des paramètres simples, afin d’obtenir une enquête différente à chaque partie.
 2. **En tant que joueur**, j’explore les lieux et collecte des indices, afin de construire mes propres pistes.
-3. **En tant que joueur**, j’interroge un suspect sur son alibi, ses relations ou un indice, afin de confronter son témoignage aux faits connus.
+3. **En tant que joueur**, j’interroge un suspect sur son alibi, ses relations ou un indice, afin de confronter son témoignage aux faits et aux indices déjà découverts.
 4. **En tant que joueur**, je formule une accusation en désignant un coupable, un mobile et des preuves, afin d’obtenir un résultat expliqué.
 5. **En tant qu’enseignant ou démonstrateur**, je démarre une enquête jouable en soutenance, afin de vérifier qu’elle peut être résolue sans connaître sa solution à l’avance.
+6. **En tant que joueur**, je consulte mon carnet d’enquête, afin de retrouver les indices collectés et les informations importantes découvertes au cours de la partie.
+7. **En tant que joueur**, je consulte la chronologie des événements connus, afin de comparer les alibis et de repérer d’éventuelles incohérences.
+8. **En tant que joueur**, je consulte les relations entre les suspects, afin de mieux comprendre leurs liens et d’identifier des mobiles possibles.
+9. **En tant que joueur**, je demande une aide adaptée à ma progression lorsque je suis bloqué, afin de poursuivre l’enquête sans obtenir immédiatement sa solution.
+10. **En tant que joueur**, je consulte le bilan de l’enquête à la fin de la partie, afin de comprendre la solution et le rôle des principaux indices.
+
+Ces scénarios décrivent les usages visés à terme ; ils ne signifient pas que toutes les fonctionnalités seront présentes dès la première version. La reprise d’une partie sauvegardée et le choix d’un niveau de difficulté pourront être étudiés ultérieurement, une fois le périmètre de la boucle de jeu initiale validé.
 
 # Plan des features
 

@@ -52,13 +52,12 @@ Base de données — PostgreSQL / Flyway
 |---|---|
 | Front | Web : HTML/CSS/JavaScript natif ou React/Vue, à décider |
 | API REST | Spring Boot 3, Spring MVC, OpenAPI / Swagger ; endpoints sous `/api/v1`, erreurs RFC 9457 |
-| Back | Java 21, organisé en architecture hexagonale |
-| Graphes | JGraphT pour les relations et les trajets |
+| Back | Java 21, architecture hexagonale ; JGraphT pour les graphes de relations et de lieux |
 | Persistance | PostgreSQL, Spring Data JPA, Flyway ; une migration par feature |
-| Tests et qualité | JUnit 5, Mockito, AssertJ, Testcontainers, JaCoCo |
+| Tests et qualité | JUnit 5, Mockito, AssertJ, ArchUnit, Spring Boot Test, Testcontainers, JaCoCo ; tests unitaires, d’architecture, d’intégration et de validation métier |
 | Livraison | GitHub Actions ; Docker Compose et conteneurisation prévues en v0.2.0 |
 
-Les choix détaillés du front et du modèle métier restent à confirmer lors des premières features. La répartition nominative des axes fonctionnels n’a pas encore été décidée. La partie (`GameSession`) est envisagée comme entité pivot reliant l’enquête, la progression du joueur, les indices collectés et le verdict final.
+Le choix du framework front et le découpage fin du modèle métier seront validés sur les premières features. La répartition nominative des 12 features et le socle préalable v0.0 sont détaillés dans le [dossier de lancement](doc/dossier-lancement.md). `GameSession` est le pivot du parcours joueur, sans remplacer les entités métier distinctes comme `Investigation`, les événements, les suspects et les indices.
 
 Un **squelette initial de packages Java** est présent dans `src/main/java/fr/miage/plottwist/`. Il sépare le domaine, les cas d’utilisation et les adaptateurs techniques selon une organisation inspirée de l’architecture hexagonale. Les packages ne contiennent pas encore de fonctionnalités métier ; le projet ne dispose pas encore de `pom.xml` ni d’un backend exécutable.
 
@@ -92,11 +91,12 @@ fr.miage.plottwist/
 
 | Version cible | Objectif |
 |---|---|
-| **v0.1.0** | Boucle jouable minimale : génération des personnages et relations, chronologie initiale, indices et accusation |
-| **v0.2.0** | Choix du coupable et du mobile, trajets, classement des suspects, interrogatoire structuré et conteneurisation |
-| **v1.0.0** | Validation globale de la résolubilité, détection d’incohérences, aide adaptative et bilan explicatif |
+| **v0.0** | Socle technique commun et CI, préalable aux features et hors quota des 12 |
+| **v0.1.0** | 4 features : graphe de suspects, chronologie, placement d’indices et accusation de base |
+| **v0.2.0** | 4 features : choix coupable-mobile, trajets et alibis, scoring des fausses pistes, interrogatoire structuré |
+| **v1.0.0** | 4 features : vérification de résolubilité, détection spatio-temporelle, aide par gain d’information, explication de l’accusation |
 
-Chaque itération prévoit une feature algorithmique par membre, développée de bout en bout. La démarche retenue est : **idéation → back → tests → API REST → front**. Les objectifs détaillés et les scénarios figurent dans le [dossier de lancement](doc/dossier-lancement.md).
+Chaque version comprend quatre features attribuées nominativement et développées de bout en bout. Une fixture et un contrat API par feature permettent de la tester et de la démontrer sans attendre les autres membres ; les objectifs détaillés et critères figurent dans le [dossier de lancement](doc/dossier-lancement.md).
 
 ## Démarrage et tests
 
@@ -104,7 +104,7 @@ Le dépôt est actuellement en phase de lancement : il contient le README, le do
 
 ## Usage de l’intelligence artificielle
 
-L’IA peut assister la conception, l’explication, les tests et la documentation ; chaque membre reste responsable du code livré et doit pouvoir l’expliquer. Aucun secret ni donnée personnelle ne doit être transmis à un assistant. Le protocole détaillé et le suivi de la part de l’IA sont décrits dans le [dossier de lancement](doc/dossier-lancement.md).
+L’IA peut assister certaines tâches dans le respect de plafonds par compétence ; les décisions métier restent humaines et chaque usage est tracé et vérifié. Aucun secret ni donnée personnelle ne doit être transmis à un assistant. La politique, les objectifs et le suivi de la part de l’IA sont décrits dans le [dossier de lancement](doc/dossier-lancement.md).
 
 ## Licence
 

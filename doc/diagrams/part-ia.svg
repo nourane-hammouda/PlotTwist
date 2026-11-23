@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="86.54mm" viewBox="0 0 1040 500" role="img" aria-labelledby="title desc">
-  <title id="title">Diagramme en araignée préparatoire de la part de l’IA par compétence</title>
-  <desc id="desc">Diagramme radar vierge présentant les cinq compétences de haut niveau à gauche et les cinq compétences de bas niveau à droite. Les valeurs de part IA et les plafonds restent à renseigner par l’équipe.</desc>
+  <title id="title">Plafonds d’équipe et estimation R1 de la part IA par compétence</title>
+  <desc id="desc">Diagramme en araignée. Plafonds : idéation 30 %, conception 20 %, spécification 25 %, algorithmique 15 %, validation 20 %, code 40 %, tests 50 %, CI/CD 50 %, rédaction 50 %, débogage 30 %. Estimations R1 : idéation 25 %, conception 15 %, spécification 20 %, algorithmique 10 %, validation 0 %, code 10 %, tests 0 %, CI/CD 20 %, rédaction 40 %, débogage 10 %. Moyennes : haut niveau 14 % mesuré et 22 % de plafond ; bas niveau 16 % mesuré et 44 % de plafond.</desc>
   <style>
     text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
     .title { font-size: 23px; font-weight: 700; }
@@ -13,6 +13,8 @@
     .split { stroke: #9b9daf; stroke-width: 2; stroke-dasharray: 5 6; }
     .high { fill: #239d70; }
     .low { fill: #6550d9; }
+    .goal { fill: #6550d9; fill-opacity: .08; stroke: #6550d9; stroke-width: 4; stroke-dasharray: 9 6; }
+    .actual { fill: #239d70; fill-opacity: .18; stroke: #239d70; stroke-width: 4; }
   </style>
 
   <text x="26" y="38" class="title">Part de l’IA par compétence</text>
@@ -39,10 +41,15 @@
   <line x1="180" y1="245" x2="18" y2="192" class="axis"/>
   <line x1="180" y1="67" x2="180" y2="423" class="split"/>
 
-  <text x="171" y="107" class="tick">100</text>
-  <text x="171" y="141" class="tick">75</text>
-  <text x="171" y="175" class="tick">50</text>
-  <text x="171" y="209" class="tick">25</text>
+  <polygon points="150,204 220,190 261,219 265,245 261,272 210,286 160,273 156,253 138,245 148,234" class="goal"/>
+  <polygon points="155,211 190,231 180,245 214,245 245,266 190,259 180,245 164,250 146,245 156,237" class="actual"/>
+
+  <text x="164" y="78" class="tick">100</text>
+  <text x="164" y="112" class="tick">80</text>
+  <text x="164" y="146" class="tick">60</text>
+  <text x="164" y="180" class="tick">40</text>
+  <text x="164" y="214" class="tick">20</text>
+  <text x="164" y="249" class="tick">0</text>
   <text x="40" y="97" text-anchor="middle" class="label">Idéation</text>
   <text x="305" y="97" text-anchor="middle" class="label">Code</text>
   <text x="367" y="184" class="label">Tests</text>
@@ -55,13 +62,14 @@
   <text x="16" y="176" class="label">Conception</text>
 
   <rect x="565" y="105" width="430" height="276" rx="18" fill="#ffffff" stroke="#e3e5ec" stroke-width="2"/>
-  <circle cx="610" cy="158" r="8" fill="#6550d9"/>
-  <text x="632" y="164" class="detail">Part IA réelle à renseigner</text>
-  <line x1="600" y1="206" x2="620" y2="206" stroke="#239d70" stroke-width="4" stroke-dasharray="6 5"/>
-  <text x="632" y="212" class="detail">Plafond de l’équipe à fixer</text>
-  <text x="600" y="270" class="section">ÉTAT DU GRAPHIQUE</text>
-  <text x="600" y="304" class="detail">Les axes et l’échelle sont prêts.</text>
-  <text x="600" y="330" class="detail">Aucune valeur n’est tracée pour</text>
-  <text x="600" y="356" class="detail">ne pas présenter les chiffres</text>
-  <text x="600" y="382" class="detail">d’exemple comme ceux de l’équipe.</text>
+  <line x1="600" y1="146" x2="620" y2="146" stroke="#6550d9" stroke-width="4" stroke-dasharray="7 5"/>
+  <text x="632" y="152" class="detail">Plafond IA par compétence</text>
+  <line x1="600" y1="180" x2="620" y2="180" stroke="#239d70" stroke-width="4"/>
+  <text x="632" y="186" class="detail">Part IA estimée pour le dossier R1</text>
+  <text x="600" y="230" class="detail">Haut niveau : R1 14 % · plafond moyen 22 %</text>
+  <text x="600" y="264" class="detail">Bas niveau : R1 16 % · plafond moyen 44 %</text>
+  <text x="600" y="312" class="detail">R1 par axe : idéation 25 · conception 15 %</text>
+  <text x="600" y="336" class="detail">Spécification 20 · algorithmique 10 · validation 0 %</text>
+  <text x="600" y="360" class="detail">Code 10 · tests 0 · CI/CD 20 · rédaction 40 · débogage 10 %</text>
+  <text x="600" y="392" class="tick">Plafonds par axe détaillés dans le tableau.</text>
 </svg>

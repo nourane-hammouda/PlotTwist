@@ -60,7 +60,7 @@ h2 {
   font-size: 9.5pt;
 }
 
-#annexe-part-ia {
+#protocole-ia {
   break-before: page;
 }
 
@@ -96,14 +96,23 @@ table {
   line-height: 1.25;
 }
 
-.architecture-table table {
+.architecture-table table,
+.features-table table,
+.steps-table table,
+.comparison-table table {
   margin: 1mm 0 2mm;
   font-size: 6.8pt;
   line-height: 1.15;
 }
 
 .architecture-table th,
-.architecture-table td {
+.architecture-table td,
+.features-table th,
+.features-table td,
+.steps-table th,
+.steps-table td,
+.comparison-table th,
+.comparison-table td {
   padding: 0.7mm 1mm;
 }
 
@@ -151,4 +160,10 @@ img {
   width: 100%;
   height: auto;
   margin: 2mm 0 3mm;
+}
+
+img[src*="part-ia.svg"] {
+  height: 65mm;
+  width: auto;
+  margin: 1mm auto;
 }

@@ -1,0 +1,45 @@
+export const investigation = {
+  title: "La dernière représentation",
+  location: "Théâtre des Astres",
+  suspects: [
+    { id: "s1", name: "Éloïse Varenne", role: "Première danseuse", initial: "ÉV", note: "Elle affirme avoir quitté le théâtre avant le dernier acte." },
+    { id: "s2", name: "Gabriel Moreau", role: "Régisseur lumière", initial: "GM", note: "Il contrôlait seul les lumières et les accès aux coulisses." },
+    { id: "s3", name: "Léonard Faye", role: "Directeur artistique", initial: "LF", note: "La victime menaçait de révéler une affaire de plagiat." },
+    { id: "s4", name: "Mina Sorel", role: "Costumière", initial: "MS", note: "Elle connaît les passages dissimulés derrière la scène." },
+    { id: "s5", name: "Thomas Rivière", role: "Pianiste", initial: "TR", note: "Il est resté au piano pendant presque toute la représentation." },
+  ],
+  relations: [
+    { from: "s1", to: "s2", kind: "Une dette ancienne", type: "solid" },
+    { from: "s1", to: "s3", kind: "Rivalité", type: "dashed" },
+    { from: "s1", to: "s4", kind: "Confidente", type: "solid" },
+    { from: "s2", to: "s3", kind: "Conflit", type: "dashed" },
+    { from: "s2", to: "s5", kind: "Complices ?", type: "dashed" },
+    { from: "s3", to: "s4", kind: "Secret partagé", type: "solid" },
+    { from: "s4", to: "s5", kind: "Voisins", type: "solid" },
+  ],
+  rooms: [
+    { id: "r1", name: "La scène", type: "Lieu du drame", time: "22:14" },
+    { id: "r2", name: "Les coulisses", type: "Accès réservé", time: "22:08" },
+    { id: "r3", name: "La loge 3", type: "Loge des artistes", time: "21:52" },
+    { id: "r4", name: "La régie", type: "Poste technique", time: "22:11" },
+  ],
+  events: [
+    { time: "21:40", title: "Le dernier rappel", description: "La troupe salue. La salle est comble." },
+    { time: "21:52", title: "Une porte se referme", description: "Un témoin aperçoit une silhouette près de la loge 3." },
+    { time: "22:08", title: "Lumière noire", description: "La scène s'éteint pendant exactement trois minutes." },
+    { time: "22:14", title: "Le rideau tombe", description: "Le corps de Victor Delatour est découvert.", flagged: true },
+    { time: "22:31", title: "Appel aux secours", description: "La police est prévenue depuis le hall." },
+  ],
+  clues: [
+    { id: "clue-1", title: "Un bouton de nacre", category: "OBJET", place: "La scène", description: "Retrouvé près du rideau. Une trace de fil noir accroche encore sa tranche.", discovered: true },
+    { id: "clue-2", title: "La partition annotée", category: "DOCUMENT", place: "La régie", description: "Une mesure a été réécrite à l'encre fraîche, avec une heure en marge." },
+    { id: "clue-3", title: "Poussière de colophane", category: "TRACE", place: "Les coulisses", description: "Des empreintes traversent la poussière vers une porte condamnée." },
+    { id: "clue-4", title: "Le billet déchiré", category: "TÉMOIGNAGE", place: "La loge 3", description: "Quelques mots subsistent : « après le dernier acte, seul·e »." },
+  ],
+  questions: [
+    { id: "alibi", label: "Revenir sur votre alibi", answer: "J'étais à la régie. Les lumières, c'est ma responsabilité… enfin, c'était." },
+    { id: "victim", label: "Parler de Victor Delatour", answer: "Il avait le don de transformer chaque répétition en règlement de comptes." },
+    { id: "clue", label: "Présenter le bouton de nacre", answer: "Ce bouton ? Il ne vient pas d'un costume de la troupe. Regardez la doublure, pas la scène." },
+  ],
+  solution: { suspectId: "s4", motive: "Protéger un secret", clueIds: ["clue-1", "clue-3"] },
+};

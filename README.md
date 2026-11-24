@@ -61,6 +61,27 @@ Le choix du framework front et le découpage fin du modèle métier seront valid
 
 Un **squelette initial de packages Java** est présent dans `src/main/java/fr/miage/plottwist/`. Il sépare le domaine, les cas d’utilisation et les adaptateurs techniques selon une organisation inspirée de l’architecture hexagonale. Les packages ne contiennent pas encore de fonctionnalités métier ; le projet ne dispose pas encore de `pom.xml` ni d’un backend exécutable.
 
+## Structure du dépôt
+
+La structure distingue le backend, le futur frontend du jeu, le site de présentation et la documentation. Les répertoires encore vides sont conservés avec un fichier `.gitkeep` ; ils ne signifient pas que leur contenu est déjà implémenté.
+
+```text
+.
+├── .github/
+│   └── workflows/                 CI à mettre en place dans le socle v0.0
+├── doc/                            dossier de lancement et diagrammes
+├── front/                          future interface du jeu
+├── site/                           future page de présentation du projet
+└── src/
+    ├── main/
+    │   ├── java/fr/miage/plottwist/
+    │   │                               packages du backend
+    │   └── resources/db/migration/  futures migrations Flyway
+    └── test/
+        ├── java/fr/miage/plottwist/ tests Java
+        └── resources/               fixtures et ressources de test
+```
+
 ```text
 fr.miage.plottwist/
 ├── api/                          points d’entrée techniques

@@ -305,3 +305,25 @@ h1 em { color: var(--amber-bright); font-weight: 500; }
   .stat-badge { padding: 6px; font-size: 7px; }
   .main-footer { align-items: start; flex-direction: column; }
 }
+
+.f1-suspect-layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 15px; }
+.f1-suspect-list { display: grid; gap: 7px; padding: 14px; }
+.f1-suspect-card { width: 100%; text-align: left; color: var(--ink); }
+.f1-suspect-card .suspect-status { flex: 0 0 auto; }
+.f1-profile-detail { margin: 0 14px 14px; }
+.f1-profile-detail p { color: #a6a397; font-size: 10px; line-height: 1.6; }
+.f1-declaration-list { display: grid; gap: 0; padding: 0 16px 10px; list-style: none; }
+.f1-declaration { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line-soft); }
+.f1-declaration:last-child { border-bottom: 0; }
+.f1-declaration time { color: var(--amber); font: 9px var(--mono); }
+.f1-declaration h3 { margin: 0 0 4px; font: 500 13px var(--serif); }
+.f1-declaration p { margin: 0; color: #92968d; font-size: 10px; line-height: 1.55; }
+.f1-declaration-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; margin-top: 7px; color: #797f76; font-size: 8px; }
+.f1-declaration-meta span { color: var(--amber); font-family: var(--mono); }
+.f1-status { padding: 18px; color: #92968d; font-size: 11px; }
+.f1-status.error { color: #d29a8d; }
+.f1-empty { padding: 18px; color: #92968d; font-size: 10px; }
+
+@media (max-width: 760px) {
+  .f1-suspect-layout { grid-template-columns: 1fr; }
+}

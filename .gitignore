@@ -1,0 +1,12 @@
+# Java / Maven
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local environments and operating system files
+.venv/
+.DS_Store

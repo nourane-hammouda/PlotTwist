@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111313" />
+    <meta
+      name="description"
+      content="PlotTwist — un bureau d'enquête immersif pour résoudre des affaires générées."
+    />
+    <title>PlotTwist — Bureau d'enquête</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="PlotTwist, accueil">
+          <span class="brand-mark" aria-hidden="true">P<span>.</span></span>
+          <span class="brand-name">PLOT<span>TWIST</span></span>
+        </a>
+
+        <div class="sidebar-label">BUREAU D'ENQUÊTE</div>
+        <div class="case-mini">
+          <span class="case-mini-icon" aria-hidden="true">✳</span>
+          <div>
+            <span class="eyebrow">AFFAIRE EN COURS</span>
+            <strong>La dernière<br />représentation</strong>
+          </div>
+          <span class="live-dot" aria-label="Enquête en cours"></span>
+        </div>
+
+        <nav class="main-nav" aria-label="Navigation de l'enquête">
+          <button class="nav-item active" type="button" data-tab="overview">
+            <span class="nav-number">00</span><span>Vue d'ensemble</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="suspects">
+            <span class="nav-number">01</span><span>Suspects & relations</span>
+            <span class="nav-count">05</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="timeline">
+            <span class="nav-number">02</span><span>Lieux & chronologie</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="clues">
+            <span class="nav-number">03</span><span>Carnet d'indices</span>
+            <span class="nav-count" id="clue-count">01</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="verdict">
+            <span class="nav-number">04</span><span>Interrogatoire</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="progress-label">
+            <span>PROGRESSION</span><span id="progress-value">1 / 8</span>
+          </div>
+          <div class="progress-track"><span id="progress-bar"></span></div>
+          <p>Chaque détail compte.<br />Rien n'est laissé au hasard.</p>
+          <div class="sidebar-footer">
+            <span class="seed-mark">GRAINE · <span id="seed-display">NIGHT-8842</span></span>
+            <span class="avatar">N</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <div class="breadcrumbs"><span>ENQUÊTES</span><i>/</i><strong>EN COURS</strong></div>
+          <div class="topbar-actions">
+            <span class="save-state"><span class="save-dot"></span> Partie sauvegardée</span>
+            <button class="icon-button" type="button" aria-label="Notifications">⌁</button>
+            <button class="profile-button" type="button"><span class="avatar">N</span><span>Nourane</span><span class="chevron">⌄</span></button>
+          </div>
+        </header>
+
+        <section class="case-heading">
+          <div>
+            <div class="kicker"><span class="kicker-line"></span> DOSSIER Nº 0241 <span class="kicker-separator">·</span> THÉÂTRE DES ASTRES</div>
+            <h1>La dernière <em>représentation</em></h1>
+            <p class="case-subtitle">Un dernier salut. Une lumière qui s'éteint. Et un silence qui en dit long.</p>
+          </div>
+          <div class="case-stamp"><span>ENQUÊTE</span><strong>EN COURS</strong><span class="stamp-date">14 OCT. · 23:48</span></div>
+        </section>
+
+        <div class="case-meta">
+          <span><span class="meta-icon">◷</span> Il y a 2 heures</span>
+          <span><span class="meta-icon">⌖</span> Paris, 9ᵉ arrondissement</span>
+          <span><span class="meta-icon">♧</span> Affaire générée &amp; vérifiée</span>
+          <button class="text-button" type="button" data-action="new-case">↻ <span>Nouvelle affaire</span></button>
+        </div>
+
+        <div class="tab-strip" role="tablist" aria-label="Sections du dossier">
+          <button class="tab-button active" type="button" role="tab" aria-selected="true" data-tab="overview">Le dossier</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="suspects">Les suspects <span>05</span></button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="timeline">Chronologie</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="clues">Indices <span id="tab-clue-count">01</span></button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="verdict">Interrogatoire</button>
+        </div>
+
+        <div id="view-root" class="view-root" aria-live="polite"></div>
+        <footer class="main-footer">
+          <span>PLOT<span class="footer-accent">TWIST</span> <span class="footer-divider">/</span> LE HASARD N'EST JAMAIS INNOCENT.</span>
+          <span>PROTO • DÉMO INTERACTIVE <span class="footer-divider">·</span> V0.0</span>
+        </footer>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

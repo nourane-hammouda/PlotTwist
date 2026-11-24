@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="45mm" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
-  <title id="title">Parcours d’une enquête PlotTwist</title>
-  <desc id="desc">Une enquête vivante : graine déterministe, monde dynamique sous contraintes, temps qui s'écoule, retournement loyal et dénouement par flashback.</desc>
+  <title id="title">Parcours d’une enquête Chrono-Rashōmon dans PlotTwist</title>
+  <desc id="desc">Une enquête temporelle multi-récits : récits subjectifs initiaux, magnétoscope multi-pistes, détection d'interférences, injection de preuves, Plot Twist et vérité objective.</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
       <path d="M0 0L10 5L0 10z" fill="#7565d8"/>
@@ -16,49 +16,49 @@
     .result { fill: #f8f3e7; stroke: #e5c878; stroke-width: 2; }
     .arrow { stroke: #7565d8; stroke-width: 3; fill: none; marker-end: url(#arrow); }
   </style>
-  <text x="24" y="34" class="title">Parcours d’une partie : un récit interactif dynamique qui avance et se retourne</text>
+  <text x="24" y="34" class="title">Parcours Chrono-Rashōmon : du magnétoscope multi-récits à la vérité objective</text>
   
   <!-- 1 · DEMARRER -->
   <rect x="24" y="75" width="190" height="160" rx="14" class="step"/>
   <text x="119" y="112" text-anchor="middle" class="label">1 · Démarrer</text>
   <text x="119" y="142" text-anchor="middle" class="detail">Graine déterministe</text>
   <text x="119" y="165" text-anchor="middle" class="detail">(Seed #AF42),</text>
-  <text x="119" y="188" text-anchor="middle" class="detail">paramètres de partie</text>
-  <text x="119" y="211" text-anchor="middle" class="detail">&amp; rejouabilité</text>
+  <text x="119" y="188" text-anchor="middle" class="detail">plan des lieux &amp; 4</text>
+  <text x="119" y="211" text-anchor="middle" class="detail">récits de suspects</text>
   <path d="M218 155H254" class="arrow"/>
 
   <!-- 2 · GENERER -->
   <rect x="264" y="75" width="215" height="160" rx="14" class="engine"/>
   <text x="371" y="112" text-anchor="middle" class="label">2 · Générer</text>
-  <text x="371" y="142" text-anchor="middle" class="detail">Graphe social JGraphT,</text>
-  <text x="371" y="165" text-anchor="middle" class="detail">lieux, indices &amp; motifs</text>
-  <text x="371" y="188" text-anchor="middle" class="detail">de relations sous</text>
+  <text x="371" y="142" text-anchor="middle" class="detail">Graphes subjectifs,</text>
+  <text x="371" y="165" text-anchor="middle" class="detail">motifs relationnels,</text>
+  <text x="371" y="188" text-anchor="middle" class="detail">traces physiques sous</text>
   <text x="371" y="211" text-anchor="middle" class="detail">contraintes formelles</text>
   <path d="M483 155H519" class="arrow"/>
 
-  <!-- 3 · ENQUETER -->
+  <!-- 3 · NAVIGUER -->
   <rect x="529" y="75" width="225" height="160" rx="14" class="step"/>
-  <text x="641" y="112" text-anchor="middle" class="label">3 · Enquêter</text>
-  <text x="641" y="142" text-anchor="middle" class="detail">Horloge &amp; agendas actifs,</text>
-  <text x="641" y="165" text-anchor="middle" class="detail">propagation de rumeurs,</text>
-  <text x="641" y="188" text-anchor="middle" class="detail">twist loyal &amp; coupable</text>
-  <text x="641" y="211" text-anchor="middle" class="detail">qui brouille les pistes</text>
+  <text x="641" y="112" text-anchor="middle" class="label">3 · Naviguer</text>
+  <text x="641" y="142" text-anchor="middle" class="detail">Magnétoscope temporel :</text>
+  <text x="641" y="165" text-anchor="middle" class="detail">défilement, superposition</text>
+  <text x="641" y="188" text-anchor="middle" class="detail">des 4 pistes et repérage</text>
+  <text x="641" y="211" text-anchor="middle" class="detail">d’anomalies Rashōmon</text>
   <path d="M758 155H794" class="arrow"/>
 
-  <!-- 4 · DECIDER -->
+  <!-- 4 · CONFRONTER -->
   <rect x="804" y="75" width="195" height="160" rx="14" class="step"/>
-  <text x="901" y="112" text-anchor="middle" class="label">4 · Décider</text>
-  <text x="901" y="142" text-anchor="middle" class="detail">Choix à conséquences :</text>
-  <text x="901" y="165" text-anchor="middle" class="detail">mandats, confrontations,</text>
-  <text x="901" y="188" text-anchor="middle" class="detail">dossier d’accusation</text>
-  <text x="901" y="211" text-anchor="middle" class="detail">traçable &amp; argumenté</text>
+  <text x="901" y="112" text-anchor="middle" class="label">4 · Confronter</text>
+  <text x="901" y="142" text-anchor="middle" class="detail">Injection de preuves,</text>
+  <text x="901" y="165" text-anchor="middle" class="detail">effondrement des alibis</text>
+  <text x="901" y="188" text-anchor="middle" class="detail">&amp; bascule du Plot Twist</text>
+  <text x="901" y="211" text-anchor="middle" class="detail">(glissement temporel)</text>
   <path d="M1003 155H1039" class="arrow"/>
 
   <!-- 5 · DENOUER -->
   <rect x="1049" y="75" width="131" height="160" rx="14" class="result"/>
   <text x="1114" y="112" text-anchor="middle" class="label">5 · Dénouer</text>
-  <text x="1114" y="142" text-anchor="middle" class="detail">4 fins possibles,</text>
-  <text x="1114" y="165" text-anchor="middle" class="detail">flashback (LCS),</text>
-  <text x="1114" y="188" text-anchor="middle" class="detail">bilan justifié &amp;</text>
-  <text x="1114" y="211" text-anchor="middle" class="detail">chaîne causale</text>
+  <text x="1114" y="142" text-anchor="middle" class="detail">Piste de la Vérité</text>
+  <text x="1114" y="165" text-anchor="middle" class="detail">Objective validée,</text>
+  <text x="1114" y="188" text-anchor="middle" class="detail">rejeu animé &amp;</text>
+  <text x="1114" y="211" text-anchor="middle" class="detail">score de sagacité</text>
 </svg>

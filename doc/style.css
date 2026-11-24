@@ -99,9 +99,10 @@ table {
 .architecture-table table,
 .features-table table,
 .steps-table table,
-.comparison-table table {
-  margin: 1mm 0 2mm;
-  font-size: 6.8pt;
+.comparison-table table,
+.ia-table table {
+  margin: 1mm 0 1.5mm;
+  font-size: 6.7pt;
   line-height: 1.15;
 }
 
@@ -112,8 +113,10 @@ table {
 .steps-table th,
 .steps-table td,
 .comparison-table th,
-.comparison-table td {
-  padding: 0.7mm 1mm;
+.comparison-table td,
+.ia-table th,
+.ia-table td {
+  padding: 0.6mm 1mm;
 }
 
 .architecture-diagram {
@@ -162,8 +165,19 @@ img {
   margin: 2mm 0 3mm;
 }
 
+.ia-table table {
+  margin: 1mm 0 1mm;
+  font-size: 6.4pt;
+  line-height: 1.12;
+}
+
+.ia-table th,
+.ia-table td {
+  padding: 0.5mm 0.8mm;
+}
+
 img[src*="part-ia.svg"] {
-  height: 65mm;
+  height: 40mm;
   width: auto;
   margin: 1mm auto;
 }

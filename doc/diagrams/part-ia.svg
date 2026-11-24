@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="86.54mm" viewBox="0 0 1040 500" role="img" aria-labelledby="title desc">
   <title id="title">Plafonds d’équipe et estimation R1 de la part IA par compétence</title>
-  <desc id="desc">Diagramme en araignée. Plafonds : idéation 30 %, conception 20 %, spécification 25 %, algorithmique 15 %, validation 20 %, code 40 %, tests 50 %, CI/CD 50 %, rédaction 50 %, débogage 30 %. Estimations R1 : idéation 25 %, conception 15 %, spécification 20 %, algorithmique 10 %, validation 0 %, code 10 %, tests 0 %, CI/CD 20 %, rédaction 40 %, débogage 10 %. Moyennes : haut niveau 14 % mesuré et 22 % de plafond ; bas niveau 16 % mesuré et 44 % de plafond.</desc>
+  <desc id="desc">Diagramme en araignée. Plafonds : idéation 30 %, conception 20 %, spécification 25 %, algorithmique 15 %, validation 20 %, code 75 %, tests 50 %, CI/CD 50 %, rédaction 50 %, débogage 30 %. Estimations R1 : idéation 25 %, conception 15 %, spécification 20 %, algorithmique 10 %, validation 0 %, code 10 %, tests 0 %, CI/CD 20 %, rédaction 40 %, débogage 10 %. Moyennes : haut niveau 14 % mesuré et 22 % de plafond ; bas niveau 16 % mesuré et 51 % de plafond.</desc>
   <style>
     text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
     .title { font-size: 23px; font-weight: 700; }
@@ -41,7 +41,7 @@
   <line x1="180" y1="245" x2="18" y2="192" class="axis"/>
   <line x1="180" y1="67" x2="180" y2="423" class="split"/>
 
-  <polygon points="150,204 220,190 261,219 265,245 261,272 210,286 160,273 156,253 138,245 148,234" class="goal"/>
+  <polygon points="150,204 255,141 261,219 265,245 261,272 210,286 160,273 156,253 138,245 148,234" class="goal"/>
   <polygon points="155,211 190,231 180,245 214,245 245,266 190,259 180,245 164,250 146,245 156,237" class="actual"/>
 
   <text x="164" y="78" class="tick">100</text>
@@ -63,13 +63,13 @@
 
   <rect x="565" y="105" width="430" height="276" rx="18" fill="#ffffff" stroke="#e3e5ec" stroke-width="2"/>
   <line x1="600" y1="146" x2="620" y2="146" stroke="#6550d9" stroke-width="4" stroke-dasharray="7 5"/>
-  <text x="632" y="152" class="detail">Plafond IA par compétence</text>
+  <text x="632" y="152" class="detail">Plafond IA par compétence (Code : 75 %)</text>
   <line x1="600" y1="180" x2="620" y2="180" stroke="#239d70" stroke-width="4"/>
   <text x="632" y="186" class="detail">Part IA estimée pour le dossier R1</text>
   <text x="600" y="230" class="detail">Haut niveau : R1 14 % · plafond moyen 22 %</text>
-  <text x="600" y="264" class="detail">Bas niveau : R1 16 % · plafond moyen 44 %</text>
+  <text x="600" y="264" class="detail">Bas niveau : R1 16 % · plafond moyen 51 %</text>
   <text x="600" y="312" class="detail">R1 par axe : idéation 25 · conception 15 %</text>
   <text x="600" y="336" class="detail">Spécification 20 · algorithmique 10 · validation 0 %</text>
   <text x="600" y="360" class="detail">Code 10 · tests 0 · CI/CD 20 · rédaction 40 · débogage 10 %</text>
-  <text x="600" y="392" class="tick">Plafonds par axe détaillés dans le tableau.</text>
+  <text x="600" y="392" class="tick">Plafonds par axe détaillés dans le tableau de l’annexe.</text>
 </svg>

@@ -3,10 +3,11 @@ import { investigation } from "./data.js";
 import { renderSuspects } from "./suspects-view.js";
 import { renderTimeline } from "./timeline-view.js";
 import { renderClues } from "./clues-view.js";
-import { renderVerdict } from "./verdict-view.js";
+import { bindF4BoardInteractions, renderVerdict } from "./verdict-view.js";
 
 const root = document.querySelector("#view-root");
 const toast = document.querySelector("#toast");
+let f4BoardData = null;
 let toastTimer;
 
 function showToast(message) {
@@ -19,11 +20,29 @@ function showToast(message) {
 function renderOverview(state) {
   const count = state.discoveredClues.length;
   const faces = investigation.suspects.map((suspect) => `<span class="face" title="${suspect.name}">${suspect.initial.slice(0, 1)}</span>`).join("");
+  const declarationsById = new Map((f4BoardData?.declarations ?? []).map((declaration) => [declaration.id, declaration]));
+  const conflictSummary = (f4BoardData?.conflicts ?? []).map((conflict) => {
+    const first = declarationsById.get(conflict.firstDeclarationId);
+    const second = declarationsById.get(conflict.secondDeclarationId);
+    return `
+      <li class="f4-conflict">
+        <span class="f4-conflict-type">${conflict.type === "UBIQUITY" ? "UBIQUITÉ" : "SOLITUDE CONTREDITE"}</span>
+        <span>${first.suspectName} · ${first.placeName} · ${first.startTime}–${first.endTime}</span>
+        <span>${second.suspectName} · ${second.placeName} · ${second.startTime}–${second.endTime}</span>
+      </li>`;
+  }).join("");
+  const f4Preview = f4BoardData
+    ? `<ul class="f4-conflict-list">${conflictSummary}</ul>`
+    : `<p class="f4-board-loading" role="status">Chargement des données F4…</p>`;
   root.innerHTML = `
     <div class="overview-grid">
       <div class="left-column"><section class="panel"><div class="panel-heading"><div><span class="section-overline">L'AFFAIRE EN BREF</span><h2>Une mort en pleine lumière.</h2></div><button class="small-link" data-tab="timeline">Voir la chronologie ↗</button></div>
         <div class="case-note"><span class="note-pin">✳</span><span class="section-overline">NOTE DU COMMISSAIRE</span><p>Victor Delatour, metteur en scène adulé et redouté, a été retrouvé sans vie sur la scène après la première. Cinq personnes étaient encore dans le théâtre. Toutes ont une bonne raison de mentir.</p></div>
         <div class="overview-lower"><div><div class="mini-label">PERSONNES DANS LE DOSSIER <strong>05 SUSPECTS</strong></div><div class="suspect-mini-list"><div class="face-stack">${faces}</div><span class="face-more">+ détails</span></div></div><div><div class="mini-label">INDICES RÉPERTORIÉS <strong>${count} / 8</strong></div><div class="clue-stat"><strong>${count}</strong><span>indice${count === 1 ? "" : "s"} découvert${count === 1 ? "" : "s"}</span></div><div class="clue-meter"><span style="width:${Math.max(12.5, count * 12.5)}%"></span></div></div></div>
+      </section>
+      <section class="panel f4-overview"><div class="panel-heading"><div><span class="section-overline">F4 / INCOHÉRENCES</span><h2>Des alibis se contredisent.</h2><p>Conflits évidents fournis par les données de l’enquête.</p></div>${f4BoardData ? `<span class="stat-badge">${f4BoardData.conflicts.length} CONFLITS</span>` : ""}</div>
+        ${f4Preview}
+        <button class="primary-button f4-overview-button" type="button" data-tab="verdict">Ouvrir la validation F4 <span>→</span></button>
       </section></div>
       <aside class="right-column"><section class="quote-card"><span class="quote-mark">“</span><blockquote>Le rideau tombe toujours. La question, c'est : qui est encore dans la salle ?</blockquote><cite>— Note anonyme, loge 3</cite></section><section class="next-step"><span class="section-overline">VOTRE PROCHAINE PISTE</span><h3>Fouillez les coulisses.</h3><p>Une trace a été signalée derrière la scène. Elle n'apparaît dans aucun rapport officiel.</p><button class="primary-button" data-tab="clues">Ouvrir le carnet <span>→</span></button></section></aside>
     </div>`;
@@ -45,8 +64,70 @@ function render() {
   if (state.activeTab === "suspects") renderSuspects(root, state);
   else if (state.activeTab === "timeline") renderTimeline(root, state);
   else if (state.activeTab === "clues") renderClues(root, { ...state, onSearch: (clueQuery) => api.update({ clueQuery }) });
-  else if (state.activeTab === "verdict") renderVerdict(root, state);
+  else if (state.activeTab === "verdict") renderVerdict(root, state, f4BoardData);
   else renderOverview(state);
+}
+
+function connectF4Declarations(firstDeclarationId, secondDeclarationId) {
+  api.update({
+    f4Accusation: {
+      firstDeclarationId,
+      secondDeclarationId,
+      designatedLiarDeclarationId: null,
+      designatedLiarName: null,
+      correct: null,
+      status: "linked",
+    },
+  });
+}
+
+async function accuseF4Declaration(designatedLiarDeclarationId) {
+  const current = api.getState().f4Accusation;
+  if (!current?.firstDeclarationId || !current?.secondDeclarationId) return;
+  const declaration = f4BoardData?.declarations.find((item) => item.id === designatedLiarDeclarationId);
+  if (!declaration) {
+    showToast("Cette déclaration n’est pas disponible dans les données F4.");
+    return;
+  }
+
+  api.update({
+    f4Accusation: {
+      ...current,
+      designatedLiarDeclarationId,
+      designatedLiarName: declaration.suspectName,
+      correct: null,
+      status: "checking",
+    },
+  });
+
+  try {
+    const result = await api.submitF4Accusation({
+      firstDeclarationId: current.firstDeclarationId,
+      secondDeclarationId: current.secondDeclarationId,
+      designatedLiarDeclarationId,
+    });
+    if (typeof result.correct !== "boolean") {
+      throw new Error("La réponse F4 ne contient pas de verdict booléen.");
+    }
+    api.update({
+      f4Accusation: {
+        ...api.getState().f4Accusation,
+        correct: result.correct,
+        status: "complete",
+      },
+    });
+  } catch (error) {
+    console.error("Impossible de vérifier l’accusation F4.", error);
+    api.update({
+      f4Accusation: {
+        ...api.getState().f4Accusation,
+        correct: null,
+        status: "error",
+        error: "La vérification F4 a échoué. Réessayez.",
+      },
+    });
+    showToast("La vérification F4 a échoué.");
+  }
 }
 
 document.addEventListener("click", (event) => {
@@ -67,7 +148,9 @@ document.addEventListener("click", (event) => {
     }
   }
   if (action === "ask-question") api.update({ interviewQuestion: id });
-  if (action === "new-case") showToast("La génération d'une nouvelle affaire sera reliée à l'API.");
+  if (action === "new-case") {
+    showToast("La démo utilise une affaire fixe. La génération nécessitera le futur backend REST Spring Boot ; aucune route ne l’implémente encore.");
+  }
 });
 
 document.addEventListener("change", (event) => {
@@ -98,5 +181,19 @@ document.addEventListener("submit", (event) => {
   api.update({ accusation: { suspectId, motive, clueIds, correct, checks, explanation } });
 });
 
+bindF4BoardInteractions(root, {
+  onConnect: connectF4Declarations,
+  onPin: accuseF4Declaration,
+});
+
 api.subscribe(render);
 render();
+api.getF4Board()
+  .then((board) => {
+    f4BoardData = board;
+    render();
+  })
+  .catch((error) => {
+    console.error("Impossible de charger les données F4.", error);
+    showToast("Impossible de charger les déclarations F4.");
+  });

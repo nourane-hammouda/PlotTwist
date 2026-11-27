@@ -1,5 +1,8 @@
+import { investigation } from "./data.js";
+
 const STORAGE_KEY = "plottwist.game-state";
 const API_BASE_URL = "/api/v1";
+const USE_MOCK = true;
 
 const initialState = {
   sessionId: "demo-0241",
@@ -11,6 +14,7 @@ const initialState = {
   interviewSuspect: "s2",
   interviewQuestion: "",
   accusation: null,
+  f4Accusation: null,
 };
 
 function readState() {
@@ -65,6 +69,49 @@ export const api = {
   },
   post(path, body) {
     return request(path, { method: "POST", body: JSON.stringify(body) });
+  },
+  async getF4Board() {
+    if (USE_MOCK) {
+      const suspectsById = new Map(investigation.suspects.map((suspect) => [suspect.id, suspect]));
+      const placesById = new Map(investigation.rooms.map((place) => [place.id, place]));
+      return {
+        declarations: investigation.declarations.map((declaration) => ({
+          ...declaration,
+          suspectName: suspectsById.get(declaration.suspectId).name,
+          placeName: placesById.get(declaration.placeId).name,
+        })),
+        conflicts: investigation.f4Conflicts,
+      };
+    }
+
+    const [declarations, conflicts] = await Promise.all([
+      request("/f4/declarations"),
+      request("/f4/conflicts"),
+    ]);
+    return { declarations, conflicts };
+  },
+  async submitF4Accusation(accusation) {
+    if (USE_MOCK) {
+      const [firstId, secondId] = [
+        accusation.firstDeclarationId,
+        accusation.secondDeclarationId,
+      ].sort();
+      const key = `${firstId}|${secondId}|${accusation.designatedLiarDeclarationId}`;
+      const correct = investigation.f4ExpectedAccusations[key];
+      if (typeof correct !== "boolean") {
+        throw new Error(`Aucune réponse de démo F4 pour l'accusation ${key}.`);
+      }
+      return { correct };
+    }
+
+    const result = await request("/f4/accusations", {
+      method: "POST",
+      body: JSON.stringify(accusation),
+    });
+    if (!result || typeof result.correct !== "boolean") {
+      throw new Error("La réponse du serveur F4 doit contenir un verdict booléen.");
+    }
+    return result;
   },
   async startSession(seed) {
     const session = await request("/sessions", {

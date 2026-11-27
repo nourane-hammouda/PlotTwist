@@ -455,7 +455,33 @@ h1 em { color: var(--lime); font-style: normal; }
 .f1-status { padding: 18px; color: #92968d; font-size: 11px; }
 .f1-status.error { color: #d29a8d; }
 .f1-empty { padding: 18px; color: #92968d; font-size: 10px; }
+.f1-graph-panel { margin-top: 15px; }
+.f1-graph-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 13px 20px 0; color: var(--muted); font-size: 10px; }
+.f1-graph-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.f1-legend-line { width: 21px; height: 0; border-top: 2px solid var(--purple); }
+.f1-legend-line.declarer { border-color: var(--pink); border-top-width: 3px; }
+.f1-graph-scroll { overflow-x: auto; padding: 8px 14px 14px; }
+.f1-narrative-graph { display: block; width: 100%; min-width: 720px; height: auto; }
+.f1-graph-edge { fill: none; stroke: #8b80b5; stroke-width: 2; opacity: .7; }
+.f1-graph-edge.declarer { stroke: var(--pink); stroke-width: 3; opacity: .9; }
+.f1-graph-profile rect, .f1-graph-event rect { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
+.f1-graph-profile circle { fill: var(--lime); }
+.f1-graph-profile text, .f1-graph-event text { font-family: var(--sans); }
+.f1-graph-initial { fill: var(--purple-dark); font-size: 12px; font-weight: 700; }
+.f1-graph-name { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.f1-graph-role { fill: var(--muted); font-size: 10px; }
+.f1-graph-event circle { fill: var(--pink); }
+.f1-graph-type { fill: var(--muted); font-family: var(--mono) !important; font-size: 8px; letter-spacing: .08em; }
+.f1-graph-title { fill: var(--ink); font-size: 11px; font-weight: 600; }
+.f1-graph-mobile { display: none; }
+.f1-mobile-event { padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-raised); }
+.f1-mobile-event > strong { display: block; margin-bottom: 8px; font: 600 11px var(--display); }
+.f1-mobile-event > div { display: flex; flex-wrap: wrap; gap: 5px; }
+.f1-mobile-participant { padding: 4px 7px; border-radius: 999px; background: #eeeaf8; color: var(--purple-dark); font-size: 9px; }
+.f1-mobile-participant.declarer { background: #fde7eb; color: #a53d52; }
 
 @media (max-width: 760px) {
   .f1-suspect-layout { grid-template-columns: 1fr; }
+  .f1-graph-scroll { display: none; }
+  .f1-graph-mobile { display: grid; gap: 8px; margin: 0; padding: 12px; list-style: none; }
 }

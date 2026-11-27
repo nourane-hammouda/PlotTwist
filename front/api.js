@@ -1,12 +1,12 @@
-import { investigation } from "./data.js";
+import { investigation } from "./data.js?v=f4-discovery-1";
 
 const STORAGE_KEY = "plottwist.game-state";
 const API_BASE_URL = "/api/v1";
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const initialState = {
   sessionId: "demo-0241",
-  seed: "NIGHT-8842",
+  seed: "#AF42",
   discoveredClues: ["clue-1"],
   selectedSuspect: "s1",
   selectedRoom: "r1",
@@ -15,13 +15,21 @@ const initialState = {
   interviewQuestion: "",
   accusation: null,
   f4Accusation: null,
+  f4DiscoveriesBySeed: {},
 };
 
 function readState() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return initialState;
   try {
-    return { ...initialState, ...JSON.parse(saved) };
+    const savedState = JSON.parse(saved);
+    return {
+      ...initialState,
+      ...savedState,
+      seed: !savedState.seed || savedState.seed === "NIGHT-8842"
+        ? initialState.seed
+        : savedState.seed,
+    };
   } catch (error) {
     console.error("Impossible de lire la sauvegarde PlotTwist.", error);
     return initialState;
@@ -70,8 +78,24 @@ export const api = {
   post(path, body) {
     return request(path, { method: "POST", body: JSON.stringify(body) });
   },
-  async getF4Board() {
+  async getF4Seeds() {
+    if (USE_MOCK) return [investigation.seed];
+
+    const seeds = await request("/f4/seeds");
+    if (
+      !Array.isArray(seeds)
+      || seeds.length === 0
+      || seeds.some((seed) => typeof seed !== "string" || !seed)
+    ) {
+      throw new Error("La liste des graines F4 renvoyée par le serveur est invalide.");
+    }
+    return seeds;
+  },
+  async getF4Board(seed = state.seed) {
     if (USE_MOCK) {
+      if (seed !== investigation.seed) {
+        throw new Error(`Aucune fixture F4 de démonstration pour la graine ${seed}.`);
+      }
       const suspectsById = new Map(investigation.suspects.map((suspect) => [suspect.id, suspect]));
       const placesById = new Map(investigation.rooms.map((place) => [place.id, place]));
       return {
@@ -80,15 +104,36 @@ export const api = {
           suspectName: suspectsById.get(declaration.suspectId).name,
           placeName: placesById.get(declaration.placeId).name,
         })),
-        conflicts: investigation.f4Conflicts,
+        conflicts: [],
+        case: {
+          seed,
+          title: investigation.title,
+          introduction: "Reliez les versions incompatibles et identifiez les déclarations mensongères.",
+          discoveryCount: investigation.f4Conflicts.length,
+        },
       };
     }
 
-    const [declarations, conflicts] = await Promise.all([
-      request("/f4/declarations"),
-      request("/f4/conflicts"),
+    const [declarations, caseDetails] = await Promise.all([
+      request(`/f4/declarations?seed=${encodeURIComponent(seed)}`),
+      request(`/f4/case?seed=${encodeURIComponent(seed)}`),
     ]);
-    return { declarations, conflicts };
+    return { declarations, conflicts: [], case: caseDetails };
+  },
+  async generateF4Investigation() {
+    if (USE_MOCK) {
+      throw new Error("La génération d’enquête nécessite le backend F4.");
+    }
+    return request("/f4/generate", { method: "POST" });
+  },
+  async submitF4Discovery(discovery) {
+    if (USE_MOCK) {
+      throw new Error("La validation progressive nécessite le backend F4.");
+    }
+    return request("/f4/discoveries", {
+      method: "POST",
+      body: JSON.stringify({ ...discovery, seed: discovery.seed ?? state.seed }),
+    });
   },
   async submitF4Accusation(accusation) {
     if (USE_MOCK) {
@@ -106,7 +151,7 @@ export const api = {
 
     const result = await request("/f4/accusations", {
       method: "POST",
-      body: JSON.stringify(accusation),
+      body: JSON.stringify({ ...accusation, seed: accusation.seed ?? state.seed }),
     });
     if (!result || typeof result.correct !== "boolean") {
       throw new Error("La réponse du serveur F4 doit contenir un verdict booléen.");

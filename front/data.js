@@ -1,4 +1,5 @@
 export const investigation = {
+  seed: "#AF42",
   title: "La dernière représentation",
   location: "Théâtre des Astres",
   suspects: [
@@ -39,8 +40,22 @@ export const investigation = {
     { id: "d6", suspectId: "s3", placeId: "r2", startTime: "21:30", endTime: "21:40", claimsAlone: false },
   ],
   f4Conflicts: [
-    { type: "SOLITUDE_CONTREDITE", firstDeclarationId: "d1", secondDeclarationId: "d2" },
-    { type: "UBIQUITY", firstDeclarationId: "d3", secondDeclarationId: "d4" },
+    {
+      type: "SOLITUDE_CONTREDITE",
+      firstDeclarationId: "d1",
+      secondDeclarationId: "d2",
+      overlapStartTime: "21:15",
+      overlapEndTime: "21:25",
+      explanation: "Un suspect affirme être seul, mais une autre déclaration signale un autre suspect au même lieu pendant ce chevauchement.",
+    },
+    {
+      type: "UBIQUITY",
+      firstDeclarationId: "d3",
+      secondDeclarationId: "d4",
+      overlapStartTime: "21:50",
+      overlapEndTime: "22:00",
+      explanation: "Le même suspect est déclaré dans deux lieux différents pendant ce chevauchement.",
+    },
   ],
   f4ExpectedAccusations: {
     "d1|d2|d1": true,

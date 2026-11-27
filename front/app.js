@@ -1,13 +1,15 @@
-import { api } from "./api.js";
-import { investigation } from "./data.js";
+import { api } from "./api.js?v=f4-discovery-1";
+import { investigation } from "./data.js?v=f4-discovery-1";
 import { renderSuspects } from "./suspects-view.js";
 import { renderTimeline } from "./timeline-view.js";
 import { renderClues } from "./clues-view.js";
-import { bindF4BoardInteractions, renderVerdict } from "./verdict-view.js";
+import { bindF4BoardInteractions, renderVerdict } from "./verdict-view.js?v=f4-discovery-1";
 
 const root = document.querySelector("#view-root");
 const toast = document.querySelector("#toast");
 let f4BoardData = null;
+let f4Seeds = [];
+let f4BoardRequestId = 0;
 let toastTimer;
 
 function showToast(message) {
@@ -20,19 +22,13 @@ function showToast(message) {
 function renderOverview(state) {
   const count = state.discoveredClues.length;
   const faces = investigation.suspects.map((suspect) => `<span class="face" title="${suspect.name}">${suspect.initial.slice(0, 1)}</span>`).join("");
-  const declarationsById = new Map((f4BoardData?.declarations ?? []).map((declaration) => [declaration.id, declaration]));
-  const conflictSummary = (f4BoardData?.conflicts ?? []).map((conflict) => {
-    const first = declarationsById.get(conflict.firstDeclarationId);
-    const second = declarationsById.get(conflict.secondDeclarationId);
-    return `
-      <li class="f4-conflict">
-        <span class="f4-conflict-type">${conflict.type === "UBIQUITY" ? "UBIQUITÉ" : "SOLITUDE CONTREDITE"}</span>
-        <span>${first.suspectName} · ${first.placeName} · ${first.startTime}–${first.endTime}</span>
-        <span>${second.suspectName} · ${second.placeName} · ${second.startTime}–${second.endTime}</span>
-      </li>`;
-  }).join("");
+  const discoveries = state.f4DiscoveriesBySeed?.[state.seed] ?? [];
+  const discoveryCount = f4BoardData?.case?.discoveryCount ?? 0;
+  const discoveryList = discoveries.length > 0
+    ? `<ul class="f4-discovery-list">${discoveries.map((discovery) => `<li>${discovery.discoveryText}</li>`).join("")}</ul>`
+    : `<p class="f4-discovery-empty">Les incohérences seront révélées au fur et à mesure de vos déductions.</p>`;
   const f4Preview = f4BoardData
-    ? `<ul class="f4-conflict-list">${conflictSummary}</ul>`
+    ? discoveryList
     : `<p class="f4-board-loading" role="status">Chargement des données F4…</p>`;
   root.innerHTML = `
     <div class="overview-grid">
@@ -40,7 +36,7 @@ function renderOverview(state) {
         <div class="case-note"><span class="note-pin">✳</span><span class="section-overline">NOTE DU COMMISSAIRE</span><p>Victor Delatour, metteur en scène adulé et redouté, a été retrouvé sans vie sur la scène après la première. Cinq personnes étaient encore dans le théâtre. Toutes ont une bonne raison de mentir.</p></div>
         <div class="overview-lower"><div><div class="mini-label">PERSONNES DANS LE DOSSIER <strong>05 SUSPECTS</strong></div><div class="suspect-mini-list"><div class="face-stack">${faces}</div><span class="face-more">+ détails</span></div></div><div><div class="mini-label">INDICES RÉPERTORIÉS <strong>${count} / 8</strong></div><div class="clue-stat"><strong>${count}</strong><span>indice${count === 1 ? "" : "s"} découvert${count === 1 ? "" : "s"}</span></div><div class="clue-meter"><span style="width:${Math.max(12.5, count * 12.5)}%"></span></div></div></div>
       </section>
-      <section class="panel f4-overview"><div class="panel-heading"><div><span class="section-overline">F4 / INCOHÉRENCES</span><h2>Des alibis se contredisent.</h2><p>Conflits évidents fournis par les données de l’enquête.</p></div>${f4BoardData ? `<span class="stat-badge">${f4BoardData.conflicts.length} CONFLITS</span>` : ""}</div>
+      <section class="panel f4-overview"><div class="panel-heading"><div><span class="section-overline">F4 / INCOHÉRENCES</span><h2>Des alibis se contredisent.</h2><p>${f4BoardData?.case?.title ?? "Les déductions débloquent les découvertes de l’enquête."}</p></div>${f4BoardData ? `<span class="stat-badge">${discoveries.length} / ${discoveryCount} DÉCOUVERTES</span>` : ""}</div>
         ${f4Preview}
         <button class="primary-button f4-overview-button" type="button" data-tab="verdict">Ouvrir la validation F4 <span>→</span></button>
       </section></div>
@@ -64,7 +60,13 @@ function render() {
   if (state.activeTab === "suspects") renderSuspects(root, state);
   else if (state.activeTab === "timeline") renderTimeline(root, state);
   else if (state.activeTab === "clues") renderClues(root, { ...state, onSearch: (clueQuery) => api.update({ clueQuery }) });
-  else if (state.activeTab === "verdict") renderVerdict(root, state, f4BoardData);
+  else if (state.activeTab === "verdict") {
+    const discoveries = state.f4DiscoveriesBySeed?.[state.seed] ?? [];
+    const board = f4BoardData
+      ? { ...f4BoardData, conflicts: discoveries.map((discovery) => discovery.conflict).filter(Boolean) }
+      : null;
+    renderVerdict(root, state, board, f4Seeds);
+  }
   else renderOverview(state);
 }
 
@@ -75,7 +77,9 @@ function connectF4Declarations(firstDeclarationId, secondDeclarationId) {
       secondDeclarationId,
       designatedLiarDeclarationId: null,
       designatedLiarName: null,
+      conflictType: "",
       correct: null,
+      discovery: null,
       status: "linked",
     },
   });
@@ -84,6 +88,10 @@ function connectF4Declarations(firstDeclarationId, secondDeclarationId) {
 async function accuseF4Declaration(designatedLiarDeclarationId) {
   const current = api.getState().f4Accusation;
   if (!current?.firstDeclarationId || !current?.secondDeclarationId) return;
+  if (!current.conflictType) {
+    showToast("Choisissez d’abord le type d’incohérence.");
+    return;
+  }
   const declaration = f4BoardData?.declarations.find((item) => item.id === designatedLiarDeclarationId);
   if (!declaration) {
     showToast("Cette déclaration n’est pas disponible dans les données F4.");
@@ -101,32 +109,44 @@ async function accuseF4Declaration(designatedLiarDeclarationId) {
   });
 
   try {
-    const result = await api.submitF4Accusation({
+    const seed = api.getState().seed;
+    const result = await api.submitF4Discovery({
+      seed,
       firstDeclarationId: current.firstDeclarationId,
       secondDeclarationId: current.secondDeclarationId,
+      conflictType: current.conflictType,
       designatedLiarDeclarationId,
     });
     if (typeof result.correct !== "boolean") {
-      throw new Error("La réponse F4 ne contient pas de verdict booléen.");
+      throw new Error("La réponse F4 ne contient pas le résultat de la découverte.");
+    }
+
+    const latestState = api.getState();
+    const discoveriesBySeed = { ...(latestState.f4DiscoveriesBySeed ?? {}) };
+    const discoveries = discoveriesBySeed[seed] ?? [];
+    if (result.correct && !discoveries.some((item) => item.discoveryId === result.discoveryId)) {
+      discoveriesBySeed[seed] = [...discoveries, result];
     }
     api.update({
       f4Accusation: {
         ...api.getState().f4Accusation,
         correct: result.correct,
-        status: "complete",
+        status: result.correct ? "complete" : "wrong",
+        discovery: result.correct ? result : null,
       },
+      f4DiscoveriesBySeed: discoveriesBySeed,
     });
   } catch (error) {
-    console.error("Impossible de vérifier l’accusation F4.", error);
+    console.error("Impossible de vérifier la découverte F4.", error);
     api.update({
       f4Accusation: {
         ...api.getState().f4Accusation,
         correct: null,
         status: "error",
-        error: "La vérification F4 a échoué. Réessayez.",
+        error: "La vérification a échoué. Réessayez.",
       },
     });
-    showToast("La vérification F4 a échoué.");
+    showToast("La vérification de la découverte a échoué.");
   }
 }
 
@@ -149,11 +169,38 @@ document.addEventListener("click", (event) => {
   }
   if (action === "ask-question") api.update({ interviewQuestion: id });
   if (action === "new-case") {
-    showToast("La démo utilise une affaire fixe. La génération nécessitera le futur backend REST Spring Boot ; aucune route ne l’implémente encore.");
+    generateF4Investigation();
   }
 });
 
 document.addEventListener("change", (event) => {
+  if (event.target.id === "f4-seed-select") {
+    const seed = event.target.value;
+    if (!f4Seeds.includes(seed)) {
+      showToast("Cette graine F4 n’est pas disponible.");
+      return;
+    }
+    if (seed === api.getState().seed) return;
+
+    f4BoardData = null;
+    api.update({ seed, f4Accusation: null });
+    loadF4Board(seed);
+    return;
+  }
+  if (event.target.id === "f4-conflict-type") {
+    const current = api.getState().f4Accusation;
+    if (!current?.firstDeclarationId) return;
+    api.update({
+      f4Accusation: {
+        ...current,
+        conflictType: event.target.value,
+        correct: null,
+        discovery: null,
+        status: "linked",
+      },
+    });
+    return;
+  }
   if (event.target.id === "interview-suspect") api.update({ interviewSuspect: event.target.value });
 });
 
@@ -188,12 +235,55 @@ bindF4BoardInteractions(root, {
 
 api.subscribe(render);
 render();
-api.getF4Board()
-  .then((board) => {
+async function loadF4Board(seed) {
+  const requestId = ++f4BoardRequestId;
+  try {
+    const board = await api.getF4Board(seed);
+    if (requestId !== f4BoardRequestId) return false;
     f4BoardData = board;
     render();
-  })
-  .catch((error) => {
+    return true;
+  } catch (error) {
+    if (requestId !== f4BoardRequestId) return false;
     console.error("Impossible de charger les données F4.", error);
     showToast("Impossible de charger les déclarations F4.");
-  });
+    return false;
+  }
+}
+
+async function generateF4Investigation() {
+  try {
+    const generated = await api.generateF4Investigation();
+    f4Seeds = [generated.seed, ...f4Seeds.filter((seed) => seed !== generated.seed)];
+    f4BoardData = null;
+    api.update({
+      seed: generated.seed,
+      activeTab: "verdict",
+      f4Accusation: null,
+    });
+    if (await loadF4Board(generated.seed)) {
+      showToast(`Nouvelle enquête créée : ${generated.title}`);
+    }
+  } catch (error) {
+    console.error("Impossible de générer une enquête F4.", error);
+    showToast("La génération de l’enquête a échoué.");
+  }
+}
+
+async function initializeF4() {
+  try {
+    f4Seeds = await api.getF4Seeds();
+    const currentSeed = api.getState().seed;
+    if (currentSeed.startsWith("#AUTO-")) {
+      f4Seeds = [currentSeed, ...f4Seeds.filter((seed) => seed !== currentSeed)];
+    } else if (!f4Seeds.includes(currentSeed)) {
+      api.update({ seed: f4Seeds[0], f4Accusation: null });
+    }
+    await loadF4Board(api.getState().seed);
+  } catch (error) {
+    console.error("Impossible de charger les graines F4.", error);
+    showToast("Impossible de charger les enquêtes F4.");
+  }
+}
+
+initializeF4();

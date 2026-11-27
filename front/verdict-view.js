@@ -1,19 +1,276 @@
-import { investigation as data } from "./data.js";
+import { investigation as data } from "./data.js?v=f4-discovery-1";
+
+const f4VhsPlayback = {
+  start: 0,
+  end: 0,
+  current: 0,
+  speed: 1,
+  playing: false,
+  interval: null,
+  lastTick: 0,
+  boardKey: "",
+  conflictWindows: [],
+};
+
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function minutesToTime(minutes) {
+  const wholeMinutes = Math.floor(minutes);
+  const hours = Math.floor(wholeMinutes / 60);
+  const remainder = wholeMinutes % 60;
+  return `${String(hours).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+}
+
+function stopF4VhsPlayback() {
+  if (f4VhsPlayback.interval !== null) {
+    clearInterval(f4VhsPlayback.interval);
+    f4VhsPlayback.interval = null;
+  }
+  f4VhsPlayback.playing = false;
+}
+
+function prepareF4Vhs(board) {
+  const declarations = board?.declarations ?? [];
+  if (declarations.length === 0) return null;
+
+  const start = Math.min(...declarations.map((declaration) => timeToMinutes(declaration.startTime)));
+  const end = Math.max(...declarations.map((declaration) => timeToMinutes(declaration.endTime)));
+  const boardKey = `${board.case?.seed ?? ""}|${declarations
+    .map((declaration) => `${declaration.id}:${declaration.startTime}:${declaration.endTime}`)
+    .join("|")}`;
+
+  if (boardKey !== f4VhsPlayback.boardKey) {
+    stopF4VhsPlayback();
+    f4VhsPlayback.boardKey = boardKey;
+    f4VhsPlayback.start = start;
+    f4VhsPlayback.end = end;
+    f4VhsPlayback.current = start;
+    f4VhsPlayback.speed = 1;
+  }
+
+  const declarationsById = new Map(declarations.map((declaration) => [declaration.id, declaration]));
+  f4VhsPlayback.conflictWindows = (board.conflicts ?? []).flatMap((conflict) => {
+    const first = declarationsById.get(conflict.firstDeclarationId);
+    const second = declarationsById.get(conflict.secondDeclarationId);
+    if (!first || !second) return [];
+
+    const conflictStart = Math.max(timeToMinutes(first.startTime), timeToMinutes(second.startTime));
+    const conflictEnd = Math.min(timeToMinutes(first.endTime), timeToMinutes(second.endTime));
+    if (conflictStart >= conflictEnd) return [];
+
+    return [{
+      start: conflictStart,
+      end: conflictEnd,
+      declarationIds: [first.id, second.id],
+    }];
+  });
+
+  const declarationsBySuspect = new Map();
+  declarations.forEach((declaration) => {
+    if (!declarationsBySuspect.has(declaration.suspectId)) {
+      declarationsBySuspect.set(declaration.suspectId, {
+        name: declaration.suspectName,
+        declarations: [],
+      });
+    }
+    declarationsBySuspect.get(declaration.suspectId).declarations.push(declaration);
+  });
+
+  const rows = [...declarationsBySuspect.values()].map((suspect) => {
+    const tracks = [];
+    const blocks = suspect.declarations
+      .slice()
+      .sort((first, second) => timeToMinutes(first.startTime) - timeToMinutes(second.startTime))
+      .map((declaration) => {
+        const declarationStart = timeToMinutes(declaration.startTime);
+        const declarationEnd = timeToMinutes(declaration.endTime);
+        let trackIndex = tracks.findIndex((trackEnd) => trackEnd <= declarationStart);
+        if (trackIndex === -1) trackIndex = tracks.length;
+        tracks[trackIndex] = declarationEnd;
+        return { declaration, trackIndex };
+      });
+    return { name: suspect.name, blocks, trackCount: Math.max(1, tracks.length) };
+  });
+
+  return { declarations, start, end, rows };
+}
+
+function f4VhsMarkup(board) {
+  if (!board) {
+    return `
+      <section class="f4-vhs" aria-labelledby="f4-vhs-title">
+        <h2 class="f4-vhs-title" id="f4-vhs-title">Magnétoscope des témoignages</h2>
+        <p class="f4-vhs-loading" role="status">Chargement de la frise…</p>
+      </section>`;
+  }
+
+  const model = prepareF4Vhs(board);
+  if (!model) {
+    return `
+      <section class="f4-vhs" aria-labelledby="f4-vhs-title">
+        <h2 class="f4-vhs-title" id="f4-vhs-title">Magnétoscope des témoignages</h2>
+        <p class="f4-vhs-loading" role="status">Aucune déclaration à afficher.</p>
+      </section>`;
+  }
+
+  const duration = model.end - model.start;
+  const positionFor = (minute) => `${((minute - model.start) / duration) * 100}%`;
+  const ticks = [];
+  for (let minute = model.start; minute < model.end; minute += 10) ticks.push(minute);
+  if (ticks[ticks.length - 1] !== model.end) ticks.push(model.end);
+
+  const tickMarkup = ticks.map((minute, index) => {
+    const edge = index === 0 ? "f4-vhs-tick--start" : index === ticks.length - 1 ? "f4-vhs-tick--end" : "";
+    return `
+      <span class="f4-vhs-tick ${edge}" style="left:${positionFor(minute)}">${minutesToTime(minute)}</span>`;
+  }).join("");
+  const rows = model.rows.map((row) => {
+    const laneHeight = row.trackCount * 30 + 4;
+    const blocks = row.blocks.map(({ declaration, trackIndex }) => {
+      const declarationStart = timeToMinutes(declaration.startTime);
+      const declarationEnd = timeToMinutes(declaration.endTime);
+      return `
+        <span
+          class="f4-vhs-block"
+          data-f4-vhs-block="${declaration.id}"
+          role="img"
+          aria-label="${declaration.placeName}, ${declaration.startTime} à ${declaration.endTime}"
+          title="${declaration.placeName} · ${declaration.startTime}–${declaration.endTime}"
+          style="left:${positionFor(declarationStart)};width:${((declarationEnd - declarationStart) / duration) * 100}%;top:${trackIndex * 30 + 3}px"
+        >${declaration.placeName}</span>`;
+    }).join("");
+
+    return `
+      <div class="f4-vhs-row" role="group" aria-label="${row.name}">
+        <span class="f4-vhs-suspect">${row.name}</span>
+        <div class="f4-vhs-lane" style="height:${laneHeight}px">
+          ${blocks}
+          <span class="f4-vhs-playhead" data-f4-vhs-playhead aria-hidden="true"></span>
+        </div>
+      </div>`;
+  }).join("");
+
+  return `
+    <section class="f4-vhs" aria-labelledby="f4-vhs-title" data-f4-vhs>
+      <div class="f4-vhs-heading">
+        <div>
+          <span class="f4-vhs-kicker">F4 / ARCHIVES VIDÉO</span>
+          <h2 class="f4-vhs-title" id="f4-vhs-title">Magnétoscope des témoignages</h2>
+        </div>
+        <div class="f4-vhs-timecode">
+          <span class="f4-vhs-rec">● REC</span>
+          <time data-f4-vhs-timecode aria-live="off">${minutesToTime(f4VhsPlayback.current)}</time>
+        </div>
+      </div>
+      <div class="f4-vhs-controls" role="group" aria-label="Commandes du magnétoscope">
+        <button type="button" data-f4-vhs-control="rewind" aria-label="Revenir au début de la frise">⏮</button>
+        <button type="button" data-f4-vhs-control="toggle" aria-label="${f4VhsPlayback.playing ? "Mettre en pause" : "Lancer la lecture"}" aria-pressed="${f4VhsPlayback.playing}">${f4VhsPlayback.playing ? "⏸" : "▶"}</button>
+        <button type="button" data-f4-vhs-control="forward" aria-label="Avancer à la fin de la frise">⏭</button>
+        <button type="button" class="f4-vhs-speed" data-f4-vhs-control="speed" aria-label="Vitesse de lecture ×${f4VhsPlayback.speed}" aria-pressed="${f4VhsPlayback.speed === 2}">×${f4VhsPlayback.speed}</button>
+        <span class="f4-vhs-announcement" data-f4-vhs-announcement role="status" aria-live="polite">${f4VhsPlayback.playing ? "Lecture en cours." : "Lecture en pause."}</span>
+      </div>
+      <div class="f4-vhs-screen" data-f4-vhs-screen>
+        <div class="f4-vhs-track-scroll" role="region" aria-label="Frise des déclarations, défilement horizontal possible" tabindex="0">
+          <div class="f4-vhs-track-grid">
+            <div class="f4-vhs-ruler">
+              <span class="f4-vhs-suspect-label">HEURE</span>
+              <div class="f4-vhs-axis">
+                ${tickMarkup}
+                <span class="f4-vhs-playhead f4-vhs-playhead--marker" data-f4-vhs-playhead aria-hidden="true"></span>
+              </div>
+            </div>
+            ${rows}
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function updateF4Vhs(root, announcement) {
+  const screen = root.querySelector("[data-f4-vhs-screen]");
+  if (!screen) return;
+
+  const duration = f4VhsPlayback.end - f4VhsPlayback.start;
+  const progress = duration > 0
+    ? Math.max(0, Math.min(100, ((f4VhsPlayback.current - f4VhsPlayback.start) / duration) * 100))
+    : 0;
+  root.querySelectorAll("[data-f4-vhs-playhead]").forEach((playhead) => {
+    playhead.style.left = `${progress}%`;
+  });
+
+  const timecode = root.querySelector("[data-f4-vhs-timecode]");
+  if (timecode) timecode.textContent = minutesToTime(f4VhsPlayback.current);
+
+  const activeDeclarations = new Set();
+  f4VhsPlayback.conflictWindows.forEach((window) => {
+    if (f4VhsPlayback.current >= window.start && f4VhsPlayback.current < window.end) {
+      window.declarationIds.forEach((id) => activeDeclarations.add(id));
+    }
+  });
+  screen.classList.toggle("f4-vhs-screen--glitch", activeDeclarations.size > 0);
+  root.querySelectorAll("[data-f4-vhs-block]").forEach((block) => {
+    block.classList.toggle("f4-vhs-block--active", activeDeclarations.has(block.dataset.f4VhsBlock));
+  });
+
+  const toggle = root.querySelector('[data-f4-vhs-control="toggle"]');
+  if (toggle) {
+    toggle.textContent = f4VhsPlayback.playing ? "⏸" : "▶";
+    toggle.setAttribute("aria-label", f4VhsPlayback.playing ? "Mettre en pause" : "Lancer la lecture");
+    toggle.setAttribute("aria-pressed", String(f4VhsPlayback.playing));
+  }
+  const speed = root.querySelector('[data-f4-vhs-control="speed"]');
+  if (speed) {
+    speed.textContent = `×${f4VhsPlayback.speed}`;
+    speed.setAttribute("aria-label", `Vitesse de lecture ×${f4VhsPlayback.speed}`);
+    speed.setAttribute("aria-pressed", String(f4VhsPlayback.speed === 2));
+  }
+
+  const status = root.querySelector("[data-f4-vhs-announcement]");
+  if (status && announcement) status.textContent = announcement;
+}
+
+function startF4VhsPlayback(root) {
+  if (f4VhsPlayback.current >= f4VhsPlayback.end) {
+    f4VhsPlayback.current = f4VhsPlayback.start;
+  }
+  f4VhsPlayback.playing = true;
+  f4VhsPlayback.lastTick = performance.now();
+  f4VhsPlayback.interval = setInterval(() => {
+    if (!root.querySelector("[data-f4-vhs-screen]")) {
+      stopF4VhsPlayback();
+      return;
+    }
+
+    const now = performance.now();
+    f4VhsPlayback.current += ((now - f4VhsPlayback.lastTick) / 1000) * f4VhsPlayback.speed;
+    f4VhsPlayback.lastTick = now;
+    if (f4VhsPlayback.current >= f4VhsPlayback.end) {
+      f4VhsPlayback.current = f4VhsPlayback.end;
+      stopF4VhsPlayback();
+      updateF4Vhs(root, "Fin de l’enregistrement.");
+      return;
+    }
+    updateF4Vhs(root);
+  }, 1000 / 30);
+}
 
 function f4DeclarationCard(declaration, state) {
   const accusation = state.f4Accusation?.firstDeclarationId ? state.f4Accusation : null;
   const connected = accusation?.firstDeclarationId === declaration.id
     || accusation?.secondDeclarationId === declaration.id;
   const accused = accusation?.designatedLiarDeclarationId === declaration.id;
-  const pin = connected ? `
+  const pin = connected && accusation.conflictType ? `
     <button
       class="f4-lie-pin ${accused ? "f4-lie-pin--selected" : ""}"
       type="button"
       data-f4-pin="${declaration.id}"
       aria-pressed="${accused}"
-      aria-label="Épingler MENSONGE sur la déclaration de ${declaration.suspectName}"
-      ${accusation.status === "checking" ? "disabled" : ""}
-    >${accused ? "⚑ MENSONGE ÉPINGLÉ" : "⚑ ÉPINGLER MENSONGE"}</button>` : "";
+      aria-label="Désigner ${declaration.suspectName} comme menteur"
+      ${accusation.status === "checking" || accusation.status === "complete" ? "disabled" : ""}
+    >${accused ? "⚑ MENSONGE DÉSIGNÉ" : "⚑ DÉSIGNER LE MENSONGE"}</button>` : "";
   const alone = declaration.claimsAlone ? "<span class=\"f4-alone-claim\">AFFIRME ÊTRE SEUL·E</span>" : "";
 
   return `
@@ -35,6 +292,32 @@ function f4DeclarationCard(declaration, state) {
     </article>`;
 }
 
+function f4ConflictExplanationMarkup(state, allDiscoveriesFound) {
+  const accusation = state.f4Accusation;
+  if (accusation?.correct === true && accusation.discovery) {
+    return `
+      <div class="f4-conflict-explanation-panel f4-discovery-result" role="status" aria-live="polite">
+        <strong>${allDiscoveriesFound
+          ? "Toutes les incohérences ont été élucidées"
+          : `Découverte ${accusation.discovery.discoveryOrder} / ${accusation.discovery.discoveryCount}`}</strong>
+        <p>${accusation.discovery.discoveryText}</p>
+      </div>`;
+  }
+  const selectedType = accusation?.conflictType ?? "";
+  return `
+    <div class="f4-conflict-explanation-panel" role="status" aria-live="polite">
+      <strong>Quel type d’incohérence avez-vous repéré ?</strong>
+      <label class="f4-conflict-type-picker" for="f4-conflict-type">
+        <span>Choisissez une déduction avant de désigner le menteur.</span>
+        <select class="field-select" id="f4-conflict-type" aria-label="Type d’incohérence">
+          <option value="">Choisir un type…</option>
+          <option value="UBIQUITY" ${selectedType === "UBIQUITY" ? "selected" : ""}>Ubiquité — une personne, deux lieux</option>
+          <option value="SOLITUDE_CONTREDITE" ${selectedType === "SOLITUDE_CONTREDITE" ? "selected" : ""}>Solitude contredite — un autre témoin est présent</option>
+        </select>
+      </label>
+    </div>`;
+}
+
 function f4BoardMarkup(state, board) {
   if (!board) {
     return `
@@ -48,6 +331,9 @@ function f4BoardMarkup(state, board) {
   const firstId = accusation?.firstDeclarationId;
   const secondId = accusation?.secondDeclarationId;
   const linked = firstId && secondId;
+  const discoveries = state.f4DiscoveriesBySeed?.[state.seed] ?? [];
+  const discoveryCount = board.case?.discoveryCount ?? 0;
+  const allDiscoveriesFound = discoveryCount > 0 && discoveries.length >= discoveryCount;
   const threadClass = accusation?.status === "checking"
     ? "f4-thread--pending"
     : accusation?.correct === true
@@ -58,17 +344,24 @@ function f4BoardMarkup(state, board) {
   const status = accusation?.status === "error"
     ? accusation.error
     : accusation?.status === "checking"
-      ? "Vérification de l’accusation…"
+      ? "Vérification de votre déduction…"
       : accusation?.correct === true
-        ? `VRAI — la déclaration de ${accusation.designatedLiarName} est reconnue mensongère.`
+        ? allDiscoveriesFound
+          ? "Toutes les incohérences ont été élucidées. Les déclarations mensongères sont maintenant consignées dans le carnet."
+          : "Découverte enregistrée dans le carnet. Reliez d’autres fiches pour poursuivre l’enquête."
         : accusation?.correct === false
-          ? "FAUX — le fil casse : l’accusation ne correspond pas à la vérité terrain."
+          ? "Cette déduction ne correspond pas aux témoignages. Vous pouvez réessayer."
           : linked
-            ? "Fil posé. Épinglez MENSONGE sur l’une des deux déclarations reliées."
-            : "Reliez deux fiches en les faisant glisser l’une vers l’autre, ou sélectionnez-les avec Entrée.";
+            ? accusation.conflictType
+              ? "Type choisi. Désignez la déclaration qui ment."
+              : "Choisissez le type d’incohérence, puis désignez la déclaration qui ment."
+            : "Reliez deux fiches. Choisissez le type d’incohérence et le témoignage mensonger.";
   const cards = board.declarations.map((declaration) => f4DeclarationCard(declaration, state)).join("");
   const thread = linked
     ? `<line class="f4-thread ${threadClass}" data-f4-thread data-first-id="${firstId}" data-second-id="${secondId}" />`
+    : "";
+  const conflictExplanation = linked
+    ? f4ConflictExplanationMarkup(state, allDiscoveriesFound)
     : "";
 
   return `
@@ -78,10 +371,10 @@ function f4BoardMarkup(state, board) {
           <span class="f4-board-kicker">F4 / DOSSIER DES TÉMOIGNAGES</span>
           <h2 class="f4-board-title" id="f4-board-title">Reliez les versions contradictoires</h2>
           <p class="f4-board-instructions" id="f4-board-instructions">
-            Faites glisser une fiche vers une autre. Au clavier : Entrée sur la première, puis sur la seconde.
+            Reliez deux fiches, choisissez le type d’incohérence, puis désignez le menteur. Au clavier : Entrée sur la première fiche, puis sur la seconde.
           </p>
         </div>
-        <span class="f4-board-count">${board.declarations.length} FICHES</span>
+        <span class="f4-board-count">${discoveries.length} / ${discoveryCount} DÉCOUVERTES · ${board.declarations.length} FICHES</span>
       </div>
       <div class="f4-board-stage" data-f4-stage>
         <svg class="f4-thread-layer" data-f4-svg aria-hidden="true">
@@ -90,7 +383,21 @@ function f4BoardMarkup(state, board) {
         </svg>
         <div class="f4-declaration-grid">${cards}</div>
       </div>
+      ${conflictExplanation}
       <p class="f4-board-status" role="status" aria-live="polite" aria-atomic="true">${status}</p>
+    </section>`;
+}
+
+function f4CaseMarkup(board) {
+  if (!board?.case) return "";
+  const caseType = board.case.seed.startsWith("#AUTO-")
+    ? "ENQUÊTE GÉNÉRÉE"
+    : "ENQUÊTE DE DÉMONSTRATION";
+  return `
+    <section class="f4-case-brief" aria-labelledby="f4-case-title">
+      <span class="f4-board-kicker">${caseType} · ${board.case.seed}</span>
+      <h3 id="f4-case-title">${board.case.title}</h3>
+      <p>${board.case.introduction}</p>
     </section>`;
 }
 
@@ -207,6 +514,32 @@ export function bindF4BoardInteractions(root, handlers) {
   });
 
   root.addEventListener("click", (event) => {
+    const vhsControl = event.target.closest("[data-f4-vhs-control]");
+    if (vhsControl) {
+      const { f4VhsControl } = vhsControl.dataset;
+      if (f4VhsControl === "toggle") {
+        if (f4VhsPlayback.playing) {
+          stopF4VhsPlayback();
+          updateF4Vhs(root, "Lecture mise en pause.");
+        } else {
+          startF4VhsPlayback(root);
+          updateF4Vhs(root, "Lecture en cours.");
+        }
+      } else if (f4VhsControl === "rewind") {
+        stopF4VhsPlayback();
+        f4VhsPlayback.current = f4VhsPlayback.start;
+        updateF4Vhs(root, "Retour au début de la frise.");
+      } else if (f4VhsControl === "forward") {
+        stopF4VhsPlayback();
+        f4VhsPlayback.current = f4VhsPlayback.end;
+        updateF4Vhs(root, "Fin de l’enregistrement.");
+      } else if (f4VhsControl === "speed") {
+        f4VhsPlayback.speed = f4VhsPlayback.speed === 1 ? 2 : 1;
+        updateF4Vhs(root, `Vitesse ×${f4VhsPlayback.speed}.`);
+      }
+      return;
+    }
+
     const pin = event.target.closest("[data-f4-pin]");
     if (pin && !pin.disabled) handlers.onPin(pin.dataset.f4Pin);
   });
@@ -224,16 +557,22 @@ export function bindF4BoardInteractions(root, handlers) {
   root.addEventListener("f4-board-rendered", drawSavedThread);
 }
 
-export function renderVerdict(root, state, f4Board) {
+export function renderVerdict(root, state, f4Board, f4Seeds = []) {
   const selected = data.suspects.find((suspect) => suspect.id === state.interviewSuspect) ?? data.suspects[1];
   const activeQuestion = data.questions.find((question) => question.id === state.interviewQuestion);
   const checks = state.accusation?.checks ?? {};
   const suspects = data.suspects.map((suspect) => `<option value="${suspect.id}" ${state.accusation?.suspectId === suspect.id ? "selected" : ""}>${suspect.name}</option>`).join("");
   const proofs = data.clues.map((clue) => `<label class="proof-choice"><input type="checkbox" name="proof" value="${clue.id}" ${state.accusation?.clueIds?.includes(clue.id) ? "checked" : ""} /> ${clue.title}</label>`).join("");
   const result = state.accusation ? `<div class="verdict-result ${state.accusation.correct ? "" : "wrong"}" role="status"><strong>${state.accusation.correct ? "✓ Votre déduction est juste." : "La piste reste à vérifier."}</strong><div class="verdict-checks"><span class="${checks.suspect ? "match" : ""}">Coupable ${checks.suspect ? "✓" : "×"}</span><span class="${checks.motive ? "match" : ""}">Mobile ${checks.motive ? "✓" : "×"}</span><span class="${checks.proofs ? "match" : ""}">Preuves ${checks.proofs ? "✓" : "×"}</span></div>${state.accusation.explanation}</div>` : "";
+  const f4VhsMarkupHtml = f4VhsMarkup(f4Board);
   const f4BoardMarkupHtml = f4BoardMarkup(state, f4Board);
+  const seedOptions = f4Seeds.length > 0
+    ? f4Seeds.map((seed) => `<option value="${seed}" ${state.seed === seed ? "selected" : ""}>${seed}</option>`).join("")
+    : `<option value="">Chargement…</option>`;
   root.innerHTML = `
-    <div class="view-header"><div><span class="section-overline">04 / CONFRONTATION & DÉDUCTION</span><h2>La vérité résiste aux questions.</h2><p>Interrogez, confrontez les faits, puis assumez votre théorie.</p></div><span class="stat-badge">DÉNOUEMENT À ÉCRIRE</span></div>
+    <div class="view-header"><div><span class="section-overline">04 / CONFRONTATION & DÉDUCTION</span><h2>La vérité résiste aux questions.</h2><p>Interrogez, confrontez les faits, puis assumez votre théorie.</p></div><div class="f4-view-header-controls"><span class="stat-badge">DÉNOUEMENT À ÉCRIRE</span><label class="f4-seed-picker" for="f4-seed-select"><span class="f4-seed-label">GRAINE D'ENQUÊTE</span><select class="field-select f4-seed-select" id="f4-seed-select" aria-label="Choisir la graine de l'enquête" ${f4Seeds.length === 0 ? "disabled" : ""}>${seedOptions}</select></label></div></div>
+    ${f4CaseMarkup(f4Board)}
+    ${f4VhsMarkupHtml}
     ${f4BoardMarkupHtml}
     <div class="interview-layout">
       <section class="panel interview-panel"><div class="panel-heading"><div><h2>Salle d'interrogatoire</h2><p>Choisissez un sujet pour orienter l'échange.</p></div><span class="section-overline">DIALOGUE STRUCTURÉ</span></div>

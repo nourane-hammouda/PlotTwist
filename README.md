@@ -59,7 +59,7 @@ Base de données — PostgreSQL / Flyway
 
 Le choix du framework front et le découpage fin du modèle métier seront validés sur les premières features. La répartition nominative des 12 features et le socle préalable v0.0 sont détaillés dans le [dossier de lancement](doc/dossier-lancement.md). `GameSession` est le pivot du parcours joueur, sans remplacer les entités métier distinctes comme `Investigation`, les événements, les suspects et les indices.
 
-Un **squelette initial de packages Java** est présent dans `src/main/java/fr/miage/plottwist/`. Il sépare le domaine, les cas d’utilisation et les adaptateurs techniques selon une organisation inspirée de l’architecture hexagonale. Les packages ne contiennent pas encore de fonctionnalités métier ; le projet ne dispose pas encore de `pom.xml` ni d’un backend exécutable.
+Le backend est en cours de construction selon cette architecture hexagonale. La feature F4 contient le domaine de détection, les cas d’utilisation, les adaptateurs JPA et l’API REST ; les autres fonctionnalités restent à développer. Le projet utilise Maven, Java 21 et Spring Boot 3. La fixture F4 `#AF42` est stockée dans H2 et le front de démonstration est servi par Spring Boot.
 
 ## Structure du dépôt
 
@@ -121,7 +121,19 @@ Chaque version comprend quatre features attribuées nominativement et développ�
 
 ## Démarrage et tests
 
-Le dépôt est actuellement en phase de lancement : il contient le README, le dossier de lancement et un premier squelette de packages backend, mais pas encore d’implémentation applicative, de configuration Maven ni de scripts de démarrage et de tests. Les commandes de lancement seront ajoutées avec la mise en place du projet Java.
+Avec Java 21 et Maven installés :
+
+```bash
+mvn spring-boot:run
+```
+
+Le front de démonstration est disponible sur <http://localhost:8080/>. L’API F4 liste les deux fixtures disponibles (`GET /api/v1/f4/seeds`) et permet de générer une enquête F4 (`POST /api/v1/f4/generate`). Chaque graine générée produit les mêmes six déclarations et deux conflits, ce qui permet de reprendre une enquête après rechargement. Les joueurs découvrent les incohérences progressivement : relier deux fiches, choisir le type de conflit et désigner le mensonge (`POST /api/v1/f4/discoveries`) débloque une explication dans le carnet. Les fixtures `#AF42` et `#B731` restent sélectionnables ; `GET /api/v1/f4/conflicts` reste disponible pour les diagnostics et tests du moteur.
+
+Pour exécuter les tests du domaine et de l’API :
+
+```bash
+mvn test
+```
 
 ## Usage de l’intelligence artificielle
 

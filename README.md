@@ -127,7 +127,7 @@ Avec Java 21 et Maven installés :
 mvn spring-boot:run
 ```
 
-Le front de démonstration est disponible sur <http://localhost:8080/>. L’API F4 liste les deux fixtures disponibles (`GET /api/v1/f4/seeds`) et permet de générer une enquête F4 (`POST /api/v1/f4/generate`). Chaque graine générée produit les mêmes six déclarations et deux conflits, ce qui permet de reprendre une enquête après rechargement. Les joueurs découvrent les incohérences progressivement : relier deux fiches, choisir le type de conflit et désigner le mensonge (`POST /api/v1/f4/discoveries`) débloque une explication dans le carnet. Les fixtures `#AF42` et `#B731` restent sélectionnables ; `GET /api/v1/f4/conflicts` reste disponible pour les diagnostics et tests du moteur.
+Le front de démonstration est disponible sur <http://localhost:8080/>. L’API F4 utilise la fixture fixe `#AF42` : `GET /api/v1/f4/declarations` retourne les témoignages, `GET /api/v1/f4/conflicts` détecte les incohérences et `POST /api/v1/f4/accusations` compare deux déclarations et le menteur désigné à la vérité terrain. Le verdict retourné est booléen (`correct`).
 
 Pour exécuter les tests du domaine et de l’API :
 

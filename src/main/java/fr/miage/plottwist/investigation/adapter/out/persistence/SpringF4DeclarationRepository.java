@@ -15,11 +15,6 @@ public class SpringF4DeclarationRepository implements F4DeclarationRepository {
     }
 
     @Override
-    public List<String> findAvailableSeeds() {
-        return jpa.findAvailableSeeds();
-    }
-
-    @Override
     public List<F4DeclarationRecord> findBySeed(String seed) {
         return jpa.findBySeedOrderByIdAsc(seed).stream()
                 .map(F4DeclarationEntity::toRecord)

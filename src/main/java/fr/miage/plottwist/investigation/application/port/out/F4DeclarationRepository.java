@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface F4DeclarationRepository {
-    List<String> findAvailableSeeds();
-
     List<F4DeclarationRecord> findBySeed(String seed);
 
     Optional<F4DeclarationRecord> findByIdAndSeed(String id, String seed);

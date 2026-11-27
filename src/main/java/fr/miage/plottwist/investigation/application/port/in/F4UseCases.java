@@ -4,38 +4,14 @@ import fr.miage.plottwist.investigation.domain.model.ConflictType;
 import java.util.List;
 
 public interface F4UseCases {
-    List<String> findAvailableSeeds();
+    List<DeclarationView> findDeclarations();
 
-    InvestigationView findInvestigation(String seed);
-
-    InvestigationView generateInvestigation();
-
-    List<DeclarationView> findDeclarations(String seed);
-
-    List<ConflictView> findConflicts(String seed);
+    List<ConflictView> findConflicts();
 
     boolean validateAccusation(
-            String seed,
             String firstDeclarationId,
             String secondDeclarationId,
             String designatedLiarDeclarationId);
-
-    DiscoveryView validateDiscovery(
-            String seed,
-            String firstDeclarationId,
-            String secondDeclarationId,
-            ConflictType conflictType,
-            String designatedLiarDeclarationId);
-
-    record InvestigationView(String seed, String title, String introduction, int discoveryCount) {}
-
-    record DiscoveryView(
-            boolean correct,
-            String discoveryId,
-            int discoveryOrder,
-            int discoveryCount,
-            String discoveryText,
-            ConflictView conflict) {}
 
     record DeclarationView(
             String id,

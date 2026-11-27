@@ -1,4 +1,4 @@
-import { investigation as data } from "./data.js?v=f4-discovery-1";
+import { investigation as data } from "./data.js?v=f4-validation-1";
 
 const f4VhsPlayback = {
   start: 0,
@@ -9,7 +9,6 @@ const f4VhsPlayback = {
   interval: null,
   lastTick: 0,
   boardKey: "",
-  conflictWindows: [],
 };
 
 function timeToMinutes(time) {
@@ -38,9 +37,9 @@ function prepareF4Vhs(board) {
 
   const start = Math.min(...declarations.map((declaration) => timeToMinutes(declaration.startTime)));
   const end = Math.max(...declarations.map((declaration) => timeToMinutes(declaration.endTime)));
-  const boardKey = `${board.case?.seed ?? ""}|${declarations
+  const boardKey = declarations
     .map((declaration) => `${declaration.id}:${declaration.startTime}:${declaration.endTime}`)
-    .join("|")}`;
+    .join("|");
 
   if (boardKey !== f4VhsPlayback.boardKey) {
     stopF4VhsPlayback();
@@ -50,23 +49,6 @@ function prepareF4Vhs(board) {
     f4VhsPlayback.current = start;
     f4VhsPlayback.speed = 1;
   }
-
-  const declarationsById = new Map(declarations.map((declaration) => [declaration.id, declaration]));
-  f4VhsPlayback.conflictWindows = (board.conflicts ?? []).flatMap((conflict) => {
-    const first = declarationsById.get(conflict.firstDeclarationId);
-    const second = declarationsById.get(conflict.secondDeclarationId);
-    if (!first || !second) return [];
-
-    const conflictStart = Math.max(timeToMinutes(first.startTime), timeToMinutes(second.startTime));
-    const conflictEnd = Math.min(timeToMinutes(first.endTime), timeToMinutes(second.endTime));
-    if (conflictStart >= conflictEnd) return [];
-
-    return [{
-      start: conflictStart,
-      end: conflictEnd,
-      declarationIds: [first.id, second.id],
-    }];
-  });
 
   const declarationsBySuspect = new Map();
   declarations.forEach((declaration) => {
@@ -135,7 +117,6 @@ function f4VhsMarkup(board) {
       return `
         <span
           class="f4-vhs-block"
-          data-f4-vhs-block="${declaration.id}"
           role="img"
           aria-label="${declaration.placeName}, ${declaration.startTime} à ${declaration.endTime}"
           title="${declaration.placeName} · ${declaration.startTime}–${declaration.endTime}"
@@ -204,17 +185,6 @@ function updateF4Vhs(root, announcement) {
   const timecode = root.querySelector("[data-f4-vhs-timecode]");
   if (timecode) timecode.textContent = minutesToTime(f4VhsPlayback.current);
 
-  const activeDeclarations = new Set();
-  f4VhsPlayback.conflictWindows.forEach((window) => {
-    if (f4VhsPlayback.current >= window.start && f4VhsPlayback.current < window.end) {
-      window.declarationIds.forEach((id) => activeDeclarations.add(id));
-    }
-  });
-  screen.classList.toggle("f4-vhs-screen--glitch", activeDeclarations.size > 0);
-  root.querySelectorAll("[data-f4-vhs-block]").forEach((block) => {
-    block.classList.toggle("f4-vhs-block--active", activeDeclarations.has(block.dataset.f4VhsBlock));
-  });
-
   const toggle = root.querySelector('[data-f4-vhs-control="toggle"]');
   if (toggle) {
     toggle.textContent = f4VhsPlayback.playing ? "⏸" : "▶";
@@ -262,7 +232,7 @@ function f4DeclarationCard(declaration, state) {
   const connected = accusation?.firstDeclarationId === declaration.id
     || accusation?.secondDeclarationId === declaration.id;
   const accused = accusation?.designatedLiarDeclarationId === declaration.id;
-  const pin = connected && accusation.conflictType ? `
+  const pin = connected ? `
     <button
       class="f4-lie-pin ${accused ? "f4-lie-pin--selected" : ""}"
       type="button"
@@ -292,29 +262,32 @@ function f4DeclarationCard(declaration, state) {
     </article>`;
 }
 
-function f4ConflictExplanationMarkup(state, allDiscoveriesFound) {
+function f4ConflictExplanationMarkup(state) {
   const accusation = state.f4Accusation;
-  if (accusation?.correct === true && accusation.discovery) {
-    return `
-      <div class="f4-conflict-explanation-panel f4-discovery-result" role="status" aria-live="polite">
-        <strong>${allDiscoveriesFound
-          ? "Toutes les incohérences ont été élucidées"
-          : `Découverte ${accusation.discovery.discoveryOrder} / ${accusation.discovery.discoveryCount}`}</strong>
-        <p>${accusation.discovery.discoveryText}</p>
-      </div>`;
-  }
-  const selectedType = accusation?.conflictType ?? "";
+  const checking = accusation?.status === "checking";
+  const failed = accusation?.status === "error";
+  const result = checking
+    ? "Comparaison avec la vérité terrain en cours…"
+    : failed
+      ? accusation.error
+      : accusation?.correct === true
+        ? "La paire est en conflit et la bonne déclaration mensongère est désignée."
+        : accusation?.correct === false
+          ? "Cette paire et le menteur désigné ne correspondent pas à la vérité terrain."
+          : "Désignez laquelle des deux déclarations est mensongère.";
+  const heading = checking
+    ? "Vérification en cours"
+    : failed
+      ? "Vérification impossible"
+      : accusation?.correct === true
+        ? "Déduction validée"
+        : accusation?.correct === false
+          ? "Déduction incorrecte"
+          : "Vérifier la déduction";
   return `
     <div class="f4-conflict-explanation-panel" role="status" aria-live="polite">
-      <strong>Quel type d’incohérence avez-vous repéré ?</strong>
-      <label class="f4-conflict-type-picker" for="f4-conflict-type">
-        <span>Choisissez une déduction avant de désigner le menteur.</span>
-        <select class="field-select" id="f4-conflict-type" aria-label="Type d’incohérence">
-          <option value="">Choisir un type…</option>
-          <option value="UBIQUITY" ${selectedType === "UBIQUITY" ? "selected" : ""}>Ubiquité — une personne, deux lieux</option>
-          <option value="SOLITUDE_CONTREDITE" ${selectedType === "SOLITUDE_CONTREDITE" ? "selected" : ""}>Solitude contredite — un autre témoin est présent</option>
-        </select>
-      </label>
+      <strong>${heading}</strong>
+      <p>${result}</p>
     </div>`;
 }
 
@@ -331,9 +304,6 @@ function f4BoardMarkup(state, board) {
   const firstId = accusation?.firstDeclarationId;
   const secondId = accusation?.secondDeclarationId;
   const linked = firstId && secondId;
-  const discoveries = state.f4DiscoveriesBySeed?.[state.seed] ?? [];
-  const discoveryCount = board.case?.discoveryCount ?? 0;
-  const allDiscoveriesFound = discoveryCount > 0 && discoveries.length >= discoveryCount;
   const threadClass = accusation?.status === "checking"
     ? "f4-thread--pending"
     : accusation?.correct === true
@@ -346,22 +316,18 @@ function f4BoardMarkup(state, board) {
     : accusation?.status === "checking"
       ? "Vérification de votre déduction…"
       : accusation?.correct === true
-        ? allDiscoveriesFound
-          ? "Toutes les incohérences ont été élucidées. Les déclarations mensongères sont maintenant consignées dans le carnet."
-          : "Découverte enregistrée dans le carnet. Reliez d’autres fiches pour poursuivre l’enquête."
+        ? "La déduction est correcte : le conflit existe et le bon menteur est désigné."
         : accusation?.correct === false
-          ? "Cette déduction ne correspond pas aux témoignages. Vous pouvez réessayer."
+          ? "Cette déduction est incorrecte. Vous pouvez réessayer."
           : linked
-            ? accusation.conflictType
-              ? "Type choisi. Désignez la déclaration qui ment."
-              : "Choisissez le type d’incohérence, puis désignez la déclaration qui ment."
-            : "Reliez deux fiches. Choisissez le type d’incohérence et le témoignage mensonger.";
+            ? "Désignez la déclaration qui ment."
+            : "Reliez deux fiches, puis désignez le témoignage mensonger.";
   const cards = board.declarations.map((declaration) => f4DeclarationCard(declaration, state)).join("");
   const thread = linked
     ? `<line class="f4-thread ${threadClass}" data-f4-thread data-first-id="${firstId}" data-second-id="${secondId}" />`
     : "";
   const conflictExplanation = linked
-    ? f4ConflictExplanationMarkup(state, allDiscoveriesFound)
+    ? f4ConflictExplanationMarkup(state)
     : "";
 
   return `
@@ -371,10 +337,10 @@ function f4BoardMarkup(state, board) {
           <span class="f4-board-kicker">F4 / DOSSIER DES TÉMOIGNAGES</span>
           <h2 class="f4-board-title" id="f4-board-title">Reliez les versions contradictoires</h2>
           <p class="f4-board-instructions" id="f4-board-instructions">
-            Reliez deux fiches, choisissez le type d’incohérence, puis désignez le menteur. Au clavier : Entrée sur la première fiche, puis sur la seconde.
+            Reliez deux fiches, puis désignez celle qui ment. Au clavier : Entrée sur la première fiche, puis sur la seconde.
           </p>
         </div>
-        <span class="f4-board-count">${discoveries.length} / ${discoveryCount} DÉCOUVERTES · ${board.declarations.length} FICHES</span>
+        <span class="f4-board-count">${board.declarations.length} FICHES</span>
       </div>
       <div class="f4-board-stage" data-f4-stage>
         <svg class="f4-thread-layer" data-f4-svg aria-hidden="true">
@@ -388,16 +354,12 @@ function f4BoardMarkup(state, board) {
     </section>`;
 }
 
-function f4CaseMarkup(board) {
-  if (!board?.case) return "";
-  const caseType = board.case.seed.startsWith("#AUTO-")
-    ? "ENQUÊTE GÉNÉRÉE"
-    : "ENQUÊTE DE DÉMONSTRATION";
+function f4CaseMarkup() {
   return `
     <section class="f4-case-brief" aria-labelledby="f4-case-title">
-      <span class="f4-board-kicker">${caseType} · ${board.case.seed}</span>
-      <h3 id="f4-case-title">${board.case.title}</h3>
-      <p>${board.case.introduction}</p>
+      <span class="f4-board-kicker">FIXTURE F4 · ${data.seed}</span>
+      <h3 id="f4-case-title">${data.title}</h3>
+      <p>Reliez les déclarations incompatibles et désignez celle qui ment.</p>
     </section>`;
 }
 
@@ -557,7 +519,7 @@ export function bindF4BoardInteractions(root, handlers) {
   root.addEventListener("f4-board-rendered", drawSavedThread);
 }
 
-export function renderVerdict(root, state, f4Board, f4Seeds = []) {
+export function renderVerdict(root, state, f4Board) {
   const selected = data.suspects.find((suspect) => suspect.id === state.interviewSuspect) ?? data.suspects[1];
   const activeQuestion = data.questions.find((question) => question.id === state.interviewQuestion);
   const checks = state.accusation?.checks ?? {};
@@ -566,12 +528,9 @@ export function renderVerdict(root, state, f4Board, f4Seeds = []) {
   const result = state.accusation ? `<div class="verdict-result ${state.accusation.correct ? "" : "wrong"}" role="status"><strong>${state.accusation.correct ? "✓ Votre déduction est juste." : "La piste reste à vérifier."}</strong><div class="verdict-checks"><span class="${checks.suspect ? "match" : ""}">Coupable ${checks.suspect ? "✓" : "×"}</span><span class="${checks.motive ? "match" : ""}">Mobile ${checks.motive ? "✓" : "×"}</span><span class="${checks.proofs ? "match" : ""}">Preuves ${checks.proofs ? "✓" : "×"}</span></div>${state.accusation.explanation}</div>` : "";
   const f4VhsMarkupHtml = f4VhsMarkup(f4Board);
   const f4BoardMarkupHtml = f4BoardMarkup(state, f4Board);
-  const seedOptions = f4Seeds.length > 0
-    ? f4Seeds.map((seed) => `<option value="${seed}" ${state.seed === seed ? "selected" : ""}>${seed}</option>`).join("")
-    : `<option value="">Chargement…</option>`;
   root.innerHTML = `
-    <div class="view-header"><div><span class="section-overline">04 / CONFRONTATION & DÉDUCTION</span><h2>La vérité résiste aux questions.</h2><p>Interrogez, confrontez les faits, puis assumez votre théorie.</p></div><div class="f4-view-header-controls"><span class="stat-badge">DÉNOUEMENT À ÉCRIRE</span><label class="f4-seed-picker" for="f4-seed-select"><span class="f4-seed-label">GRAINE D'ENQUÊTE</span><select class="field-select f4-seed-select" id="f4-seed-select" aria-label="Choisir la graine de l'enquête" ${f4Seeds.length === 0 ? "disabled" : ""}>${seedOptions}</select></label></div></div>
-    ${f4CaseMarkup(f4Board)}
+    <div class="view-header"><div><span class="section-overline">04 / CONFRONTATION & DÉDUCTION</span><h2>La vérité résiste aux questions.</h2><p>Interrogez, confrontez les faits, puis assumez votre théorie.</p></div><span class="stat-badge">DÉNOUEMENT À ÉCRIRE</span></div>
+    ${f4CaseMarkup()}
     ${f4VhsMarkupHtml}
     ${f4BoardMarkupHtml}
     <div class="interview-layout">

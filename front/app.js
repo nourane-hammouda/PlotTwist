@@ -131,6 +131,10 @@ document.addEventListener("click", (event) => {
     return;
   }
   const { action, id } = target.dataset;
+  if (action === "retry-f1") {
+    renderSuspects(root, api.getState(), true);
+    return;
+  }
   if (action === "select-suspect") api.update({ selectedSuspect: id });
   if (action === "select-room") api.update({ selectedRoom: id });
   if (action === "collect-clue") {

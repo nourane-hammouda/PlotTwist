@@ -2,12 +2,12 @@
 title: "PlotTwist"
 subtitle: "Dossier de lancement — Rendu R1"
 author: "Nourane Hammouda · Chaïma Mabrouki · Ornela Mothu · Zaineb BenMahmoud"
-date: 20 octobre 2026
+date: 24 novembre 2026
 lang: fr
 ---
 
 **Formation :** Master 1 MIAGE Apprentissage · année universitaire 2026–2027  
-**Version du document :** 1.5 · **État du projet :** lancement  
+**Version du document :** 1.7 · **État du projet :** v0.1.0 / F1 en cours d’implémentation
 **Dépôt principal :** <https://github.com/nourane-hammouda/PlotTwist>  
 **Page de projet :** à publier ; URL à ajouter dès qu’elle sera disponible.
 
@@ -72,6 +72,23 @@ Chaque livraison attribue **une feature nominative par membre** (soit 4 membres 
 
 La v0.1.0 livre la boucle minimale ; la v0.2.0 active le moteur de confrontation (Dijkstra, algèbre d'Allen, aveux) ; la v1.0.0 déploie le retournement temporel (*twist*) et le rejeu animé complet. La résolubilité et le déterminisme sont des **invariants de test stricts** vérifiés automatiquement.
 
+## Avancement F1 — Profils et récits déclarés
+
+La branche `feature/F1-Profils-et-récits-déclarés` met en place un chemin vertical testable indépendamment :
+
+- **Base de données** : migration Flyway isolée `V1__create_f1_profiles_and_subjective_events.sql` avec profils, événements subjectifs et participants ;
+- **Back Java** : modèle métier pur, validation d’arité de 1 à 4 participants, multigraphe JGraphT reliant les participants d’un même événement ;
+- **API REST** : contrat sous `/api/v1/f1` pour lire/créer les profils, lire/créer les récits et obtenir le résumé du graphe ;
+- **Front web** : vue `Pistes des suspects` branchée sur `api.js`, affichant les quatre profils, la frise des déclarations et les compteurs du graphe ;
+- **Fixture** : graine déterministe `#AF42` avec quatre suspects et quatre événements indépendants de F2, F3 et F4 ;
+- **Validation** : tests unitaires JGraphT et test MockMvc du fixture/contrat API.
+
+Une vérification sur branche a confirmé la compilation Maven complète des 37 sources principales. Le résumé du graphe a été corrigé pour comptabiliser les profils de la graine indépendamment des événements chargés et effectuer une seule lecture des récits. Le build propre et les 3 tests F1 passent.
+
+La configuration Maven Java du workspace est définie dans `.vscode/settings.json` avec synchronisation automatique du classpath afin que les imports Spring et JGraphT soient résolus dans VS Code comme lors du build Maven.
+
+Cette livraison F1 peut être lancée seule avec Maven et H2 pour les démonstrations locales ; PostgreSQL reste l’implémentation cible via la migration Flyway.
+
 # Architecture et séparation des responsabilités
 
 L’architecture respecte rigoureusement le flux unidirectionnel **front → API REST → back Java → base de données**. Le front ne communique qu’avec l’API et n’accède jamais directement à la base.
@@ -133,12 +150,12 @@ $$\text{Humain (spécification \& invariants)} \longrightarrow \text{IA (assista
 |---|---|---:|---:|---|
 | Idéation | Haut | **25 %** | **30 %** | Brainstorming sur les mécaniques d'enquête ; choix et arbitrage 100 % humains. |
 | Conception | Haut | **15 %** | **20 %** | Architecture hexagonale et modèle métier entièrement conçus par l'équipe. |
-| Spécification | Haut | **20 %** | **25 %** | Formalisation humaine des scénarios ; aide IA pour vérifier l'exhaustivité. |
+| Spécification | Haut | **25 %** | **25 %** | Formalisation humaine des scénarios ; aide IA pour vérifier l'exhaustivité et les contrats F1. |
 | Algorithmique | Haut | **10 %** | **15 %** | Cœur algorithmique conçu et calculé par l'humain ; assistance IA sur cas limites. |
 | Validation | Haut | **0 %** | **20 %** | Recette, critères d'acceptation et vérification des résultats 100 % humains. |
-| Code | Bas | **10 %** | **75 %** | Squelette initial des packages Java ; l'IA accélérera le boilerplate, le code métier restant maîtrisé. |
-| Tests | Bas | **0 %** | **50 %** | Pas encore de code de test produit en R1 ; l'IA aidera aux cas de tests en v0.1.0. |
+| Code | Bas | **25 %** | **75 %** | Assistance IA sur le squelette F1, les adaptateurs Spring/JPA et les vues front ; implémentation métier revue et maîtrisée par l'équipe. |
+| Tests | Bas | **20 %** | **50 %** | Assistance IA sur les tests JGraphT et MockMvc ; oracles et critères d'acceptation validés par l'équipe. |
 | CI/CD | Bas | **20 %** | **50 %** | Configuration du Makefile et pipeline de build PDF assistés par l'IA. |
 | Rédaction | Bas | **40 %** | **50 %** | Relecture, structuration Markdown et mise en forme du dossier avec l'IA. |
-| Débogage | Bas | **10 %** | **30 %** | Résolution d'erreurs de rendu et de dépendances Pandoc/WeasyPrint. |
+| Débogage | Bas | **15 %** | **30 %** | Résolution d'erreurs de rendu, de dépendances Pandoc/WeasyPrint et d'intégration F1. |
 :::

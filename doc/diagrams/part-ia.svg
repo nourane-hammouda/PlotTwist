@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="86.54mm" viewBox="0 0 1040 500" role="img" aria-labelledby="title desc">
   <title id="title">Plafonds d’équipe et estimation R1 de la part IA par compétence</title>
-  <desc id="desc">Diagramme en araignée. Plafonds : idéation 30 %, conception 20 %, spécification 25 %, algorithmique 15 %, validation 20 %, code 75 %, tests 50 %, CI/CD 50 %, rédaction 50 %, débogage 30 %. Estimations R1 : idéation 25 %, conception 15 %, spécification 20 %, algorithmique 10 %, validation 0 %, code 10 %, tests 0 %, CI/CD 20 %, rédaction 40 %, débogage 10 %. Moyennes : haut niveau 14 % mesuré et 22 % de plafond ; bas niveau 16 % mesuré et 51 % de plafond.</desc>
+  <desc id="desc">Plafonds : idéation 30 %, conception 20 %, spécification 25 %, algorithmique 15 %, validation 20 %, code 75 %, tests 50 %, CI/CD 50 %, rédaction 50 %, débogage 30 %. Estimation après F1 : idéation 25 %, conception 15 %, spécification 25 %, algorithmique 10 %, validation 0 %, code 25 %, tests 20 %, CI/CD 20 %, rédaction 40 %, débogage 15 %.</desc>
   <style>
     text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill: #252a3b; }
     .title { font-size: 23px; font-weight: 700; }
@@ -68,8 +68,8 @@
   <text x="632" y="186" class="detail">Part IA estimée pour le dossier R1</text>
   <text x="600" y="230" class="detail">Haut niveau : R1 14 % · plafond moyen 22 %</text>
   <text x="600" y="264" class="detail">Bas niveau : R1 16 % · plafond moyen 51 %</text>
-  <text x="600" y="312" class="detail">R1 par axe : idéation 25 · conception 15 %</text>
-  <text x="600" y="336" class="detail">Spécification 20 · algorithmique 10 · validation 0 %</text>
-  <text x="600" y="360" class="detail">Code 10 · tests 0 · CI/CD 20 · rédaction 40 · débogage 10 %</text>
+  <text x="600" y="312" class="detail">F1 par axe : idéation 25 · conception 15 %</text>
+  <text x="600" y="336" class="detail">Spécification 25 · algorithmique 10 · validation 0 %</text>
+  <text x="600" y="360" class="detail">Code 25 · tests 20 · CI/CD 20 · rédaction 40 · débogage 15 %</text>
   <text x="600" y="392" class="tick">Plafonds par axe détaillés dans le tableau de l’annexe.</text>
 </svg>
